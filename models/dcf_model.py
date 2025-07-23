@@ -1,6 +1,17 @@
-# models/dcf_model.py
+"""
+Discounted Cash Flow Model - Core Valuation Logic
+
+This module contains the DCF calculation engine for equity valuation.
+"""
 
 class DiscountedCashFlowModel:
+    """
+    A comprehensive DCF model for equity valuation.
+
+    This class implements the standard DCF methodology with configurable
+    parameters for growth rates, discount rates, and projection periods.
+    """
+
     def __init__(self, enterprise_value, debt, cash, shares_outstanding, last_fcf,
                  growth_rate, wacc, terminal_growth_rate, industry='N/A'):
         self.enterprise_value = enterprise_value

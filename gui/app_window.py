@@ -1,4 +1,4 @@
-# gui/app_window.py
+"""DCF Analyzer Application Window - Main GUI Component"""
 
 import tkinter as tk
 from tkinter import ttk, messagebox

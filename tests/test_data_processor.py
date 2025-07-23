@@ -1,9 +1,15 @@
-# test_data_processor.py
+"""
+Unit Tests for Data Processor Module
+
+Tests the data fetching and processing functionality.
+"""
 
 import unittest
 from data.data_processor import DataProcessor
 
 class TestDataProcessor(unittest.TestCase):
+    """Test suite for DataProcessor class"""
+
     def setUp(self):
         self.processor = DataProcessor()
 

@@ -1,8 +1,21 @@
-# data/data_processor.py
+"""
+Financial Data Processor - Yahoo Finance Integration
+
+This module handles fetching and processing financial data from Yahoo Finance
+for use in DCF calculations.
+"""
+
 import pandas as pd
 import yfinance as yf
 
 class DataProcessor:
+    """
+    Handles fetching and processing financial data from Yahoo Finance.
+
+    This class provides methods to retrieve key financial metrics needed
+    for DCF analysis including cash flows, balance sheet items, and growth rates.
+    """
+
     def fetch_yahoo_data(self, ticker):
         stock = yf.Ticker(ticker)
         info = stock.info
