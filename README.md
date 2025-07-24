@@ -170,3 +170,7 @@ python setup.py sdist bdist_wheel
 - **Historical Comparison**: Track valuation changes over time
 - **Data Export**: Export results to Excel or PDF reports
 - **Database Integration**: Store and retrieve historical analysis data
+
+## Media
+<img width="1393" height="929" alt="DCF1" src="https://github.com/user-attachments/assets/fcfbe0c0-b283-4420-b18e-1267cec9d1d9" />
+<img width="1394" height="928" alt="DCF2" src="https://github.com/user-attachments/assets/e046a291-8b0d-4c69-80ca-d937a61de8e4" />
