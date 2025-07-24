@@ -8,18 +8,19 @@ import threading
 
 from models.dcf_model import DiscountedCashFlowModel
 from data.data_processor import DataProcessor
-
+from gui.charts import DCFCharts
 
 class DCFAnalyzerApp(TkinterDnD.Tk):
     def __init__(self):
         super().__init__()
         self.title("DCF Valuation Tool")
-        self.geometry("1100x750")
+        self.geometry("1400x900")
 
         # Set the theme
         sv_ttk.set_theme("dark")
 
         self.data_processor = DataProcessor()
+        self.charts = DCFCharts()
         self.industry = 'N/A'  # Initialize industry
         self._create_panes()
         self._create_controls()
@@ -86,12 +87,12 @@ class DCFAnalyzerApp(TkinterDnD.Tk):
         self.calculate_button.pack(fill=tk.X, pady=5, ipady=5)
 
     def _create_results_display(self):
-        """Create tabbed results display with sensitivity analysis"""
+        """Create tabbed results display with charts and analysis"""
         # Create notebook for tabbed results
         self.results_notebook = ttk.Notebook(self.results_pane)
         self.results_notebook.pack(fill=tk.BOTH, expand=True, padx=(0, 10), pady=10)
 
-        # Tab 1: DCF Results Summary
+        # Tab 1: DCF Results Summary (existing)
         self.summary_frame = ttk.Frame(self.results_notebook)
         self.results_notebook.add(self.summary_frame, text="DCF Summary")
 
@@ -118,7 +119,11 @@ class DCFAnalyzerApp(TkinterDnD.Tk):
         self.cf_table.column("pv_fcf", width=150, anchor='e')
         self.cf_table.pack(fill=tk.BOTH, expand=True)
 
-        # Tab 2: Sensitivity Analysis
+        # Tab 2: Cash Flow Chart
+        self.cf_chart_frame = ttk.Frame(self.results_notebook)
+        self.results_notebook.add(self.cf_chart_frame, text="Cash Flow Chart")
+
+        # Tab 3: Sensitivity Analysis
         self.sensitivity_frame = ttk.Frame(self.results_notebook)
         self.results_notebook.add(self.sensitivity_frame, text="Sensitivity Analysis")
 
@@ -141,7 +146,11 @@ class DCFAnalyzerApp(TkinterDnD.Tk):
         self.sensitivity_table.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         scrollbar2.pack(side=tk.RIGHT, fill=tk.Y)
 
-        # Tab 3: Scenario Analysis
+        # Tab 4: Sensitivity Chart
+        self.sens_chart_frame = ttk.Frame(self.results_notebook)
+        self.results_notebook.add(self.sens_chart_frame, text="Sensitivity Chart")
+
+        # Tab 5: Scenario Analysis
         self.scenario_frame = ttk.Frame(self.results_notebook)
         self.results_notebook.add(self.scenario_frame, text="Scenario Analysis")
 
@@ -162,6 +171,10 @@ class DCFAnalyzerApp(TkinterDnD.Tk):
             self.scenario_table.column(col, width=110, anchor='center')
 
         self.scenario_table.pack(fill=tk.BOTH, expand=True)
+
+        # Tab 6: Scenario Chart
+        self.scenario_chart_frame = ttk.Frame(self.results_notebook)
+        self.results_notebook.add(self.scenario_chart_frame, text="Scenario Chart")
 
         # Initial message
         self.results_text.insert(tk.END, "Enter a ticker and click 'Fetch Data' to begin.")
@@ -222,7 +235,7 @@ class DCFAnalyzerApp(TkinterDnD.Tk):
         self.fetch_button.config(state="normal", text="Fetch Data")
 
     def calculate_dcf(self):
-        """Enhanced DCF calculation with sensitivity and scenario analysis"""
+        """Enhanced DCF calculation with charts, sensitivity and scenario analysis"""
         try:
             # Gather and convert parameters
             params_values = {name: var.get() for name, var in self.dcf_params.items()}
@@ -255,8 +268,42 @@ class DCFAnalyzerApp(TkinterDnD.Tk):
             scenario_results = model.scenario_analysis(years)
             self._update_scenario_table(scenario_results)
 
+            # Generate and display charts
+            self._update_charts(projected_fcf, terminal_value, model.wacc, years,
+                                sensitivity_results, scenario_results)
+
         except Exception as e:
             messagebox.showerror("Calculation Error", f"An error occurred during calculation:\n{e}")
+
+    # Add chart update methods
+    def _update_charts(self, projected_fcf, terminal_value, wacc, years, sensitivity_results, scenario_results):
+        """Update all charts with new calculation results"""
+        try:
+            # Clear existing charts
+            for widget in self.cf_chart_frame.winfo_children():
+                widget.destroy()
+            for widget in self.sens_chart_frame.winfo_children():
+                widget.destroy()
+            for widget in self.scenario_chart_frame.winfo_children():
+                widget.destroy()
+
+            # Create cash flow chart
+            cf_canvas = self.charts.create_cash_flow_chart(
+                self.cf_chart_frame, projected_fcf, terminal_value, wacc, years)
+            cf_canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+
+            # Create sensitivity chart
+            sens_canvas = self.charts.create_sensitivity_chart(
+                self.sens_chart_frame, sensitivity_results)
+            sens_canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+
+            # Create scenario chart
+            scenario_canvas = self.charts.create_scenario_chart(
+                self.scenario_chart_frame, scenario_results)
+            scenario_canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+
+        except Exception as e:
+            print(f"Error updating charts: {e}")
 
     def _update_sensitivity_table(self, sensitivity_results):
         """Update the sensitivity analysis table"""

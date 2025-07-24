@@ -15,6 +15,25 @@ This application provides a Discounted Cash Flow (DCF) valuation for publicly tr
 - **Error Handling:** Robust error handling for invalid tickers and missing data.
 - **Threaded Data Fetching:** Non-blocking data retrieval to maintain UI responsiveness.
 
+## Advanced Analysis Features
+
+### Sensitivity Analysis
+- **Variable Impact Assessment:** Shows how ±1-2% changes in growth rate, WACC, and terminal growth rate affect valuation
+- **Tornado Chart Visualization:** Visual representation of which variables have the greatest impact on intrinsic value
+- **Risk Assessment:** Helps understand valuation uncertainty and key value drivers
+
+### Scenario Modeling
+- **Bear Case:** Conservative assumptions with lower growth rates and higher discount rates
+- **Base Case:** Current parameter assumptions
+- **Bull Case:** Optimistic assumptions with higher growth rates and lower discount rates
+- **Upside/Downside Analysis:** Clear visualization of potential returns under different scenarios
+
+### Visual Charts
+- **Cash Flow Projections Chart:** Bar chart comparing projected vs. present value cash flows
+- **Sensitivity Tornado Chart:** Horizontal bar chart showing variable impact ranges
+- **Scenario Comparison Chart:** Side-by-side comparison of bear/base/bull case valuations
+- **Professional Styling:** Dark-themed charts with clear labeling and value annotations
+
 ## Project Structure
 ```
 DCFtool/
@@ -98,18 +117,22 @@ The following packages will be automatically installed (see `requirements.txt`):
    - Click the "Calculate DCF" button to perform the valuation
    - View results in the summary panel and detailed cash flow projections table
 
-## Testing
-
-Run the included unit tests to verify functionality:
+### Running Tests
 
 ```bash
-# Run all tests
-python -m unittest discover tests
+# Run all tests with verbose output
+python tests/run_all_tests.py
 
 # Run specific test modules
-python -m unittest tests.test_dcf_model
-python -m unittest tests.test_data_processor
-```
+python -m unittest tests.test_dcf_model -v
+python -m unittest tests.test_data_processor -v
+python -m unittest tests.test_charts -v
+python -m unittest tests.test_integration -v
+
+# Run tests with coverage (install coverage first: pip install coverage)
+coverage run -m unittest discover tests
+coverage report -m
+coverage html  # Generates HTML coverage report
 
 ## Building for Distribution
 
@@ -130,6 +153,8 @@ python setup.py sdist bdist_wheel
 - **DataProcessor**: Handles Yahoo Finance data fetching and financial statement processing
 - **DiscountedCashFlowModel**: Core valuation model implementing DCF calculations
 - **Comprehensive Testing**: Unit tests covering both data processing and model calculations
+- **Sensitivity and Scenario Analysis**: Advanced features for risk assessment and valuation modeling
+- **Visual Charts**: Enhanced data visualization for cash flow projections and sensitivity analysis
 
 ## Troubleshooting
 
@@ -138,3 +163,10 @@ python setup.py sdist bdist_wheel
 - **Theme Issues**: The application uses sv-ttk for theming; ensure it's properly installed
 - **Permission Errors**: Run with appropriate permissions if installation fails
 
+## Future Enhancements
+
+- **Monte Carlo Simulation**: Statistical risk assessment with probability distributions
+- **Sector-Specific Models**: Specialized valuation approaches for banks, REITs, and utilities
+- **Historical Comparison**: Track valuation changes over time
+- **Data Export**: Export results to Excel or PDF reports
+- **Database Integration**: Store and retrieve historical analysis data
