@@ -86,22 +86,30 @@ class DCFAnalyzerApp(TkinterDnD.Tk):
         self.calculate_button.pack(fill=tk.X, pady=5, ipady=5)
 
     def _create_results_display(self):
-        # --- Summary Results Frame ---
-        results_frame = ttk.LabelFrame(self.results_pane, text="DCF Results Summary", padding=10)
-        results_frame.pack(fill=tk.BOTH, expand=True, padx=(0, 10), pady=10)
+        """Create tabbed results display with sensitivity analysis"""
+        # Create notebook for tabbed results
+        self.results_notebook = ttk.Notebook(self.results_pane)
+        self.results_notebook.pack(fill=tk.BOTH, expand=True, padx=(0, 10), pady=10)
 
-        self.results_text = tk.Text(results_frame, height=15, font=('Courier', 10), wrap='word', relief='flat')
-        scrollbar = ttk.Scrollbar(results_frame, orient="vertical", command=self.results_text.yview)
-        self.results_text.configure(yscrollcommand=scrollbar.set)
+        # Tab 1: DCF Results Summary
+        self.summary_frame = ttk.Frame(self.results_notebook)
+        self.results_notebook.add(self.summary_frame, text="DCF Summary")
+
+        # Original results text widget
+        summary_inner = ttk.LabelFrame(self.summary_frame, text="Valuation Results", padding=10)
+        summary_inner.pack(fill=tk.BOTH, expand=True, pady=(0, 5))
+
+        self.results_text = tk.Text(summary_inner, height=12, font=('Courier', 10), wrap='word', relief='flat')
+        scrollbar1 = ttk.Scrollbar(summary_inner, orient="vertical", command=self.results_text.yview)
+        self.results_text.configure(yscrollcommand=scrollbar1.set)
         self.results_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        self.results_text.insert(tk.END, "Enter a ticker and click 'Fetch Data' to begin.")
+        scrollbar1.pack(side=tk.RIGHT, fill=tk.Y)
 
-        # --- Cash Flow Table Frame ---
-        table_frame = ttk.LabelFrame(self.results_pane, text="Cash Flow Projections", padding=10)
-        table_frame.pack(fill=tk.BOTH, expand=True, padx=(0, 10), pady=(0, 10))
+        # Cash flow table
+        cf_frame = ttk.LabelFrame(self.summary_frame, text="Cash Flow Projections", padding=10)
+        cf_frame.pack(fill=tk.BOTH, expand=True)
 
-        self.cf_table = ttk.Treeview(table_frame, columns=("year", "fcf", "pv_fcf"), show='headings', height=8)
+        self.cf_table = ttk.Treeview(cf_frame, columns=("year", "fcf", "pv_fcf"), show='headings', height=6)
         self.cf_table.heading("year", text="Year")
         self.cf_table.heading("fcf", text="Projected FCF (M)")
         self.cf_table.heading("pv_fcf", text="Present Value (M)")
@@ -109,6 +117,54 @@ class DCFAnalyzerApp(TkinterDnD.Tk):
         self.cf_table.column("fcf", width=150, anchor='e')
         self.cf_table.column("pv_fcf", width=150, anchor='e')
         self.cf_table.pack(fill=tk.BOTH, expand=True)
+
+        # Tab 2: Sensitivity Analysis
+        self.sensitivity_frame = ttk.Frame(self.results_notebook)
+        self.results_notebook.add(self.sensitivity_frame, text="Sensitivity Analysis")
+
+        sens_inner = ttk.LabelFrame(self.sensitivity_frame, text="Sensitivity to Key Variables", padding=10)
+        sens_inner.pack(fill=tk.BOTH, expand=True)
+
+        self.sensitivity_table = ttk.Treeview(sens_inner, columns=("variable", "adjustment", "value", "change"),
+                                              show='headings', height=15)
+        self.sensitivity_table.heading("variable", text="Variable")
+        self.sensitivity_table.heading("adjustment", text="Adjustment")
+        self.sensitivity_table.heading("value", text="Intrinsic Value")
+        self.sensitivity_table.heading("change", text="% Change")
+        self.sensitivity_table.column("variable", width=120)
+        self.sensitivity_table.column("adjustment", width=100, anchor='center')
+        self.sensitivity_table.column("value", width=120, anchor='e')
+        self.sensitivity_table.column("change", width=100, anchor='e')
+
+        scrollbar2 = ttk.Scrollbar(sens_inner, orient="vertical", command=self.sensitivity_table.yview)
+        self.sensitivity_table.configure(yscrollcommand=scrollbar2.set)
+        self.sensitivity_table.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar2.pack(side=tk.RIGHT, fill=tk.Y)
+
+        # Tab 3: Scenario Analysis
+        self.scenario_frame = ttk.Frame(self.results_notebook)
+        self.results_notebook.add(self.scenario_frame, text="Scenario Analysis")
+
+        scenario_inner = ttk.LabelFrame(self.scenario_frame, text="Bear/Base/Bull Case Analysis", padding=10)
+        scenario_inner.pack(fill=tk.BOTH, expand=True)
+
+        self.scenario_table = ttk.Treeview(scenario_inner,
+                                           columns=("scenario", "intrinsic", "upside", "growth", "wacc", "terminal"),
+                                           show='headings', height=10)
+        self.scenario_table.heading("scenario", text="Scenario")
+        self.scenario_table.heading("intrinsic", text="Intrinsic Value")
+        self.scenario_table.heading("upside", text="Upside %")
+        self.scenario_table.heading("growth", text="Growth Rate")
+        self.scenario_table.heading("wacc", text="WACC")
+        self.scenario_table.heading("terminal", text="Terminal Growth")
+
+        for col in ["scenario", "intrinsic", "upside", "growth", "wacc", "terminal"]:
+            self.scenario_table.column(col, width=110, anchor='center')
+
+        self.scenario_table.pack(fill=tk.BOTH, expand=True)
+
+        # Initial message
+        self.results_text.insert(tk.END, "Enter a ticker and click 'Fetch Data' to begin.")
 
     def _fetch_data_threaded(self):
         """Initiates data fetching in a new thread to keep the UI responsive."""
@@ -166,11 +222,10 @@ class DCFAnalyzerApp(TkinterDnD.Tk):
         self.fetch_button.config(state="normal", text="Fetch Data")
 
     def calculate_dcf(self):
-        """Gathers parameters, runs the DCF model, and displays the results."""
+        """Enhanced DCF calculation with sensitivity and scenario analysis"""
         try:
             # Gather and convert parameters
             params_values = {name: var.get() for name, var in self.dcf_params.items()}
-            # Convert percentages back to decimals
             params_values['growth_rate'] /= 100
             params_values['wacc'] /= 100
             params_values['terminal_growth_rate'] /= 100
@@ -188,11 +243,80 @@ class DCFAnalyzerApp(TkinterDnD.Tk):
             terminal_value = model.calculate_terminal_value(projected_fcf[-1])
             intrinsic_ev = model.calculate_present_value(projected_fcf, terminal_value)
 
+            # Display results
             self._display_dcf_results(model, intrinsic_value, current_price, intrinsic_ev, terminal_value, years)
             self._update_cf_table(projected_fcf, model.wacc, terminal_value, years)
 
+            # Run and display sensitivity analysis
+            sensitivity_results = model.sensitivity_analysis(years)
+            self._update_sensitivity_table(sensitivity_results)
+
+            # Run and display scenario analysis
+            scenario_results = model.scenario_analysis(years)
+            self._update_scenario_table(scenario_results)
+
         except Exception as e:
             messagebox.showerror("Calculation Error", f"An error occurred during calculation:\n{e}")
+
+    def _update_sensitivity_table(self, sensitivity_results):
+        """Update the sensitivity analysis table"""
+        # Clear existing data
+        for item in self.sensitivity_table.get_children():
+            self.sensitivity_table.delete(item)
+
+        variable_names = {
+            'growth_rate': 'FCF Growth Rate',
+            'wacc': 'WACC',
+            'terminal_growth_rate': 'Terminal Growth'
+        }
+
+        for variable, results in sensitivity_results.items():
+            display_name = variable_names.get(variable, variable)
+            for result in results:
+                adjustment = result['adjustment']
+                value = result['intrinsic_value']
+                change = result['percentage_change']
+
+                # Format adjustment display
+                if variable == 'growth_rate':
+                    adj_display = f"{adjustment:+.1%}"
+                elif variable == 'wacc':
+                    adj_display = f"{adjustment:+.1%}"
+                else:  # terminal_growth_rate
+                    adj_display = f"{adjustment:+.2%}"
+
+                self.sensitivity_table.insert("", "end", values=(
+                    display_name,
+                    adj_display,
+                    f"${value:.2f}",
+                    f"{change:+.1f}%"
+                ))
+
+    def _update_scenario_table(self, scenario_results):
+        """Update the scenario analysis table"""
+        # Clear existing data
+        for item in self.scenario_table.get_children():
+            self.scenario_table.delete(item)
+
+        for scenario, results in scenario_results.items():
+            if 'error' in results:
+                self.scenario_table.insert("", "end", values=(
+                    scenario,
+                    "ERROR",
+                    results['error'],
+                    f"{results['growth_rate']:.1%}",
+                    f"{results['wacc']:.1%}",
+                    f"{results['terminal_growth_rate']:.1%}"
+                ))
+            else:
+                self.scenario_table.insert("", "end", values=(
+                    scenario,
+                    f"${results['intrinsic_value']:.2f}",
+                    f"{results['upside_percentage']:+.1f}%",
+                    f"{results['growth_rate']:.1%}",
+                    f"{results['wacc']:.1%}",
+                    f"{results['terminal_growth_rate']:.1%}"
+                ))
 
     def _display_dcf_results(self, model, intrinsic_value, current_price, enterprise_value, terminal_value, years):
         """Formats and displays the final valuation results in the text widget."""

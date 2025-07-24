@@ -2,3 +2,4 @@ yfinance
 sv-ttk
 tkinterdnd2
 pandas
+numpy

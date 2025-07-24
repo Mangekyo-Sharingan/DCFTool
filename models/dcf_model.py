@@ -3,6 +3,7 @@ Discounted Cash Flow Model - Core Valuation Logic
 
 This module contains the DCF calculation engine for equity valuation.
 """
+import numpy as np
 
 class DiscountedCashFlowModel:
     """
@@ -23,6 +24,124 @@ class DiscountedCashFlowModel:
         self.wacc = wacc
         self.terminal_growth_rate = terminal_growth_rate
         self.industry = industry
+#############
+    def sensitivity_analysis(self, years=5, variable_ranges=None):
+        """
+        Performs sensitivity analysis on key DCF variables.
+
+        Args:
+            years: Projection period
+            variable_ranges: Dict with variable names and their range adjustments
+
+        Returns:
+            Dict with sensitivity results for each variable
+        """
+        if variable_ranges is None:
+            variable_ranges = {
+                'growth_rate': [-0.02, -0.01, 0, 0.01, 0.02],  # +/- 2%
+                'wacc': [-0.01, -0.005, 0, 0.005, 0.01],  # +/- 1%
+                'terminal_growth_rate': [-0.005, -0.0025, 0, 0.0025, 0.005]  # +/- 0.5%
+            }
+
+        base_intrinsic_value = self.calculate_intrinsic_value(years)
+        sensitivity_results = {}
+
+        for variable, adjustments in variable_ranges.items():
+            results = []
+            original_value = getattr(self, variable)
+
+            for adjustment in adjustments:
+                # Temporarily adjust the variable
+                setattr(self, variable, original_value + adjustment)
+                try:
+                    adjusted_value = self.calculate_intrinsic_value(years)
+                    percentage_change = ((adjusted_value - base_intrinsic_value) / base_intrinsic_value) * 100
+                    results.append({
+                        'adjustment': adjustment,
+                        'intrinsic_value': adjusted_value,
+                        'percentage_change': percentage_change
+                    })
+                except ValueError:
+                    # Handle cases where WACC <= terminal growth rate
+                    results.append({
+                        'adjustment': adjustment,
+                        'intrinsic_value': 0,
+                        'percentage_change': -100
+                    })
+
+            # Restore original value
+            setattr(self, variable, original_value)
+            sensitivity_results[variable] = results
+
+        return sensitivity_results
+
+    def scenario_analysis(self, years=5):
+        """
+        Performs scenario analysis with predefined bear/base/bull cases.
+
+        Returns:
+            Dict with results for each scenario
+        """
+        scenarios = {
+            'Bear Case': {
+                'growth_rate_adj': -0.02,  # 2% lower growth
+                'wacc_adj': 0.01,  # 1% higher discount rate
+                'terminal_growth_adj': -0.005  # 0.5% lower terminal growth
+            },
+            'Base Case': {
+                'growth_rate_adj': 0,
+                'wacc_adj': 0,
+                'terminal_growth_adj': 0
+            },
+            'Bull Case': {
+                'growth_rate_adj': 0.02,  # 2% higher growth
+                'wacc_adj': -0.005,  # 0.5% lower discount rate
+                'terminal_growth_adj': 0.005  # 0.5% higher terminal growth
+            }
+        }
+
+        # Store original values
+        original_growth = self.growth_rate
+        original_wacc = self.wacc
+        original_terminal = self.terminal_growth_rate
+
+        scenario_results = {}
+
+        for scenario_name, adjustments in scenarios.items():
+            # Apply adjustments
+            self.growth_rate = original_growth + adjustments['growth_rate_adj']
+            self.wacc = original_wacc + adjustments['wacc_adj']
+            self.terminal_growth_rate = original_terminal + adjustments['terminal_growth_adj']
+
+            try:
+                intrinsic_value = self.calculate_intrinsic_value(years)
+                current_price = self.calculate_implied_share_price()
+                upside = ((intrinsic_value - current_price) / current_price * 100) if current_price else 0
+
+                scenario_results[scenario_name] = {
+                    'intrinsic_value': intrinsic_value,
+                    'upside_percentage': upside,
+                    'growth_rate': self.growth_rate,
+                    'wacc': self.wacc,
+                    'terminal_growth_rate': self.terminal_growth_rate
+                }
+            except ValueError:
+                scenario_results[scenario_name] = {
+                    'intrinsic_value': 0,
+                    'upside_percentage': -100,
+                    'growth_rate': self.growth_rate,
+                    'wacc': self.wacc,
+                    'terminal_growth_rate': self.terminal_growth_rate,
+                    'error': 'Invalid parameters (WACC <= Terminal Growth)'
+                }
+
+        # Restore original values
+        self.growth_rate = original_growth
+        self.wacc = original_wacc
+        self.terminal_growth_rate = original_terminal
+
+        return scenario_results
+###########
 
     def calculate_equity_value(self):
         return self.enterprise_value - self.debt + self.cash

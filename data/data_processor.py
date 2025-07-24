@@ -75,7 +75,7 @@ class DataProcessor:
 ########################################################################################################################
         try:
             revenues = financials.loc['Total Revenue']
-            growth_rates = revenues.pct_change(periods=-1).dropna()
+            growth_rates = revenues.pct_change(periods=-1, fill_method=None).dropna()
             avg_growth = growth_rates.head(3).mean() if not growth_rates.empty else 0.05
             growth_rate = min(max(avg_growth, 0.01), 0.20)  # Constrain between 1% and 20%
         except (KeyError, IndexError):
