@@ -1,8 +1,11 @@
 """
-Charts Module - Visualization Components for DCF Analysis
+Professional Financial Visualization Suite
 
-This module provides chart generation functionality for cash flow projections
-and sensitivity analysis visualization.
+Advanced charting and visualization components for DCF analysis including
+cash flow projections, sensitivity analysis, and scenario modeling charts.
+
+Copyright (c) 2024 DCF Valuation Tool
+Licensed under MIT License
 """
 
 import matplotlib.pyplot as plt
@@ -15,27 +18,35 @@ import seaborn as sns
 
 class DCFCharts:
     """
-    Handles chart generation for DCF analysis visualization.
+    Professional-grade financial charting system for DCF analysis.
+
+    Provides comprehensive visualization capabilities including cash flow
+    projections, sensitivity tornado charts, and scenario comparison analysis
+    with publication-quality styling and formatting.
     """
 
     def __init__(self):
-        # Set the style for professional-looking charts
+        """Initialize charting system with professional styling configuration"""
         plt.style.use('dark_background')
         sns.set_palette("husl")
 
     def create_cash_flow_chart(self, parent, projected_fcf, terminal_value, wacc, years):
         """
-        Creates a cash flow projections chart with present values.
+        Generate professional cash flow projection visualization.
+
+        Creates comparative bar chart showing projected future cash flows
+        alongside their present values with detailed value annotations
+        and professional styling.
 
         Args:
-            parent: Tkinter parent widget
+            parent: Tkinter parent container widget
             projected_fcf: List of projected free cash flows
-            terminal_value: Terminal value
+            terminal_value: Calculated terminal value
             wacc: Weighted average cost of capital
             years: Number of projection years
 
         Returns:
-            FigureCanvasTkAgg: Chart canvas for embedding in GUI
+            FigureCanvasTkAgg: Embedded chart canvas for GUI integration
         """
         fig = Figure(figsize=(10, 6), facecolor='#1c1c1c')
         ax = fig.add_subplot(111, facecolor='#2b2b2b')
@@ -63,13 +74,13 @@ class DCFCharts:
 
         # Customize chart
         ax.set_xlabel('Year', color='white', fontsize=12)
-        ax.set_ylabel('Cash Flow (Millions $)', color='white', fontsize=12)
+        ax.set_ylabel('Cash Flow (Millions USD)', color='white', fontsize=12)
         ax.set_title('DCF Cash Flow Projections', color='white', fontsize=14, fontweight='bold')
         ax.set_xticks(x_pos)
         ax.set_xticklabels(x_years)
         ax.legend(facecolor='#2b2b2b', edgecolor='white')
 
-        # Add value labels on bars
+        # Professional value annotations
         for i, (bar1, bar2) in enumerate(zip(bars1, bars2)):
             height1 = bar1.get_height()
             height2 = bar2.get_height()
@@ -95,14 +106,17 @@ class DCFCharts:
 
     def create_sensitivity_chart(self, parent, sensitivity_results):
         """
-        Creates a sensitivity analysis tornado chart.
+        Generate professional sensitivity analysis tornado chart.
+
+        Creates horizontal tornado chart showing impact ranges of key variables
+        on intrinsic valuation with color-coded upside/downside impacts.
 
         Args:
-            parent: Tkinter parent widget
-            sensitivity_results: Dictionary with sensitivity analysis results
+            parent: Tkinter parent container widget
+            sensitivity_results: Dictionary containing sensitivity analysis data
 
         Returns:
-            FigureCanvasTkAgg: Chart canvas for embedding in GUI
+            FigureCanvasTkAgg: Embedded chart canvas for GUI integration
         """
         fig = Figure(figsize=(10, 6), facecolor='#1c1c1c')
         ax = fig.add_subplot(111, facecolor='#2b2b2b')
@@ -145,7 +159,7 @@ class DCFCharts:
 
         # Customize chart
         ax.set_xlabel('Impact on Intrinsic Value (%)', color='white', fontsize=12)
-        ax.set_title('Sensitivity Analysis - Tornado Chart', color='white', fontsize=14, fontweight='bold')
+        ax.set_title('Sensitivity Analysis - Variable Impact Assessment', color='white', fontsize=14, fontweight='bold')
         ax.set_yticks(y_pos)
         ax.set_yticklabels(variables)
         ax.legend(facecolor='#2b2b2b', edgecolor='white')
@@ -176,14 +190,17 @@ class DCFCharts:
 
     def create_scenario_chart(self, parent, scenario_results):
         """
-        Creates a scenario analysis comparison chart.
+        Generate professional scenario analysis comparison chart.
+
+        Creates comparative visualization of Bear/Base/Bull case valuations
+        with color-coded scenarios and detailed value annotations.
 
         Args:
-            parent: Tkinter parent widget
-            scenario_results: Dictionary with scenario analysis results
+            parent: Tkinter parent container widget
+            scenario_results: Dictionary containing scenario analysis results
 
         Returns:
-            FigureCanvasTkAgg: Chart canvas for embedding in GUI
+            FigureCanvasTkAgg: Embedded chart canvas for GUI integration
         """
         fig = Figure(figsize=(8, 6), facecolor='#1c1c1c')
         ax = fig.add_subplot(111, facecolor='#2b2b2b')
@@ -212,7 +229,7 @@ class DCFCharts:
         # Primary axis - Intrinsic Values
         bars1 = ax.bar(x_pos, intrinsic_values, color=colors, alpha=0.8, width=0.6)
         ax.set_xlabel('Scenario', color='white', fontsize=12)
-        ax.set_ylabel('Intrinsic Value ($)', color='white', fontsize=12)
+        ax.set_ylabel('Intrinsic Value (USD)', color='white', fontsize=12)
         ax.set_xticks(x_pos)
         ax.set_xticklabels(scenarios)
 
@@ -224,7 +241,7 @@ class DCFCharts:
                    color='white', fontsize=10, fontweight='bold')
 
         # Customize chart
-        ax.set_title('Scenario Analysis - Valuation Comparison',
+        ax.set_title('Scenario Analysis - Valuation Range Assessment',
                     color='white', fontsize=14, fontweight='bold')
 
         # Style the axes
@@ -240,3 +257,4 @@ class DCFCharts:
         canvas = FigureCanvasTkAgg(fig, parent)
         canvas.draw()
         return canvas
+

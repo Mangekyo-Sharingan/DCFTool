@@ -1,58 +1,54 @@
-# Python DCF Valuation Tool
+# DCF Valuation Tool
 
-This application provides a Discounted Cash Flow (DCF) valuation for publicly traded companies by fetching financial data from Yahoo Finance and allowing users to customize valuation parameters.
+A professional-grade Discounted Cash Flow (DCF) valuation application for analyzing publicly traded companies. The application fetches real-time financial data and provides comprehensive valuation analysis with advanced sensitivity and scenario modeling capabilities.
 
-## Features
+## Key Features
 
-- **Intuitive GUI:** A user-friendly graphical interface built with `tkinter` and themed with `sv-ttk`.
-- **Dark Theme:** A modern, dark-themed UI for comfortable use.
-- **Automatic Data Fetching:** Retrieves the latest financial data using the `yfinance` library.
-- **Customizable Parameters:** Allows manual adjustment of all DCF parameters including growth rates and WACC.
-- **Real-time Calculations:** Performs DCF calculations with configurable projection periods (3-10 years).
-- **Detailed Results:** Displays intrinsic value, current price comparison, and detailed cash flow projections.
-- **Cash Flow Table:** Visual representation of projected free cash flows and their present values.
-- **Industry Recognition:** Identifies and displays company industry information.
-- **Error Handling:** Robust error handling for invalid tickers and missing data.
-- **Threaded Data Fetching:** Non-blocking data retrieval to maintain UI responsiveness.
+- **Professional GUI Interface:** Modern dark-themed interface built with tkinter and enhanced styling
+- **Real-time Data Integration:** Automated financial data retrieval from Yahoo Finance API
+- **Comprehensive DCF Analysis:** Full DCF modeling with customizable parameters and multi-year projections
+- **Advanced Analytics:** Built-in sensitivity analysis and scenario modeling (Bear/Base/Bull cases)
+- **Visual Data Representation:** Professional charts for cash flow projections and sensitivity analysis
+- **Robust Error Handling:** Comprehensive validation and error management for reliable operation
+- **Multi-threaded Architecture:** Non-blocking data retrieval maintains responsive user interface
 
-## Advanced Analysis Features
+## Advanced Analysis Capabilities
 
 ### Sensitivity Analysis
-- **Variable Impact Assessment:** Shows how ±1-2% changes in growth rate, WACC, and terminal growth rate affect valuation
-- **Tornado Chart Visualization:** Visual representation of which variables have the greatest impact on intrinsic value
-- **Risk Assessment:** Helps understand valuation uncertainty and key value drivers
+- **Multi-variable Impact Assessment:** Analyzes how changes in growth rates, WACC, and terminal growth affect valuation
+- **Tornado Chart Visualization:** Professional visualization showing variable impact ranges
+- **Risk Assessment Tools:** Quantifies valuation uncertainty and identifies key value drivers
 
 ### Scenario Modeling
-- **Bear Case:** Conservative assumptions with lower growth rates and higher discount rates
-- **Base Case:** Current parameter assumptions
-- **Bull Case:** Optimistic assumptions with higher growth rates and lower discount rates
-- **Upside/Downside Analysis:** Clear visualization of potential returns under different scenarios
+- **Three-Case Analysis:** Conservative (Bear), Base, and Optimistic (Bull) scenarios
+- **Parameter Optimization:** Automatic adjustment of growth rates and discount rates for each scenario
+- **Comparative Analysis:** Side-by-side valuation comparison with upside/downside calculations
 
-### Visual Charts
-- **Cash Flow Projections Chart:** Bar chart comparing projected vs. present value cash flows
-- **Sensitivity Tornado Chart:** Horizontal bar chart showing variable impact ranges
-- **Scenario Comparison Chart:** Side-by-side comparison of bear/base/bull case valuations
-- **Professional Styling:** Dark-themed charts with clear labeling and value annotations
+### Professional Visualizations
+- **Cash Flow Projection Charts:** Comparative visualization of future vs. present value cash flows
+- **Sensitivity Tornado Charts:** Horizontal bar charts displaying variable impact ranges
+- **Scenario Comparison Charts:** Professional styling with clear value annotations and percentage changes
 
-## Project Structure
+## Technical Architecture
 ```
 DCFtool/
-├── main.py                    # Application entry point
-├── requirements.txt           # Python dependencies
-├── setup.py                   # Package setup for distribution
+├── main.py                    # Application entry point and initialization
+├── requirements.txt           # Production dependencies specification
+├── setup.py                   # Package distribution configuration
 ├── gui/
-│   ├── __init__.py           # Package initialization
-│   └── app_window.py         # Main application window with integrated controls and results
+│   ├── __init__.py           # GUI package initialization
+│   ├── app_window.py         # Main application interface and user controls
+│   └── charts.py             # Data visualization and charting components
 ├── data/
-│   ├── __init__.py           # Package initialization
-│   └── data_processor.py     # Handles data fetching and processing from Yahoo Finance
+│   ├── __init__.py           # Data package initialization
+│   └── data_processor.py     # Financial data acquisition and processing
 ├── models/
-│   ├── __init__.py           # Package initialization
-│   └── dcf_model.py          # Core DCF calculation logic and valuation model
+│   ├── __init__.py           # Models package initialization
+│   └── dcf_model.py          # Core DCF calculation engine
 └── tests/
-    ├── __init__.py           # Package initialization
-    ├── test_data_processor.py # Unit tests for data processing functionality
-    └── test_dcf_model.py      # Unit tests for DCF model calculations
+    ├── __init__.py           # Test package initialization
+    ├── test_data_processor.py # Data processing unit tests
+    └── test_dcf_model.py      # DCF model calculation tests
 ```
 
 ## System Requirements
@@ -61,21 +57,22 @@ DCFtool/
 - **Python:** 3.7 or higher
 - **Internet Connection:** Required for fetching financial data
 
-## Required Dependencies
+## Dependencies
 
-The following packages will be automatically installed (see `requirements.txt`):
-- `yfinance` - Yahoo Finance data fetching
-- `sv-ttk` - Modern tkinter theme
-- `tkinterdnd2` - Drag and drop support
-- `pandas` - Data manipulation
+Core dependencies managed via requirements.txt:
+- `yfinance` - Financial data API integration
+- `sv-ttk` - Modern UI theming system
+- `tkinterdnd2` - Enhanced drag-and-drop functionality
+- `pandas` - High-performance data manipulation
+- `numpy` - Numerical computing foundation
+- `matplotlib` - Advanced plotting and visualization
+- `seaborn` - Statistical data visualization
 
-## Installation
+## Installation Guide
 
-### Option 1: Direct Installation
+### Quick Start Installation
 
-1. **Download the Project:**
-   - Download and extract the project files to your desired location
-   - Or clone from repository:
+1. **Download and Extract:**
    ```bash
    git clone https://github.com/Mangekyo-Sharingan/DCFTool.git
    cd DCFtool
@@ -86,87 +83,90 @@ The following packages will be automatically installed (see `requirements.txt`):
    pip install -r requirements.txt
    ```
 
-3. **Run the Application:**
+3. **Launch Application:**
    ```bash
    python main.py
    ```
 
-### Option 2: Package Installation
+### Professional Package Installation
 
-1. **Install as a Package:**
+1. **Install as Development Package:**
    ```bash
    pip install -e .
    ```
 
-2. **Run from anywhere:**
+2. **Run from Command Line:**
    ```bash
    python -m dcftool
    ```
 
-## Usage Instructions
+## User Guide
 
-1. **Launch the Application:**
-   - Execute `python main.py` from the project directory
-   - The application will open with a modern dark theme interface
+### Basic Operation
+1. Launch the application using `python main.py`
+2. Enter a valid stock ticker symbol (e.g., AAPL, MSFT, GOOGL)
+3. Click "Fetch Data" to populate DCF parameters automatically
+4. Review and adjust parameters as needed for your analysis
+5. Configure projection period using the year slider (3-10 years)
+6. Execute "Calculate DCF" to generate comprehensive valuation results
 
-2. **Perform DCF Analysis:**
-   - Enter a valid stock ticker (e.g., `AAPL`, `MSFT`, `GOOGL`) into the input field
-   - Click the "Fetch Data" button to automatically populate DCF parameters
-   - Review and adjust the DCF parameters as needed (growth rates, WACC, etc.)
-   - Set the desired projection years using the slider (3-10 years)
-   - Click the "Calculate DCF" button to perform the valuation
-   - View results in the summary panel and detailed cash flow projections table
+### Advanced Features
+- **Tabbed Results Interface:** Navigate between summary, charts, and analysis views
+- **Sensitivity Analysis:** Automatic generation of tornado charts showing variable impacts
+- **Scenario Comparison:** Bear/Base/Bull case analysis with comparative visualizations
+- **Data Export:** Professional charts suitable for presentations and reports
 
-### Running Tests
+## Quality Assurance
 
+### Automated Testing
 ```bash
-# Run all tests with verbose output
-python tests/run_all_tests.py
+# Execute comprehensive test suite
+python -m unittest discover tests -v
 
 # Run specific test modules
 python -m unittest tests.test_dcf_model -v
 python -m unittest tests.test_data_processor -v
-python -m unittest tests.test_charts -v
-python -m unittest tests.test_integration -v
 
-# Run tests with coverage (install coverage first: pip install coverage)
+# Generate coverage reports
+pip install coverage
 coverage run -m unittest discover tests
 coverage report -m
-coverage html  # Generates HTML coverage report
+coverage html
+```
 
-## Building for Distribution
+## Distribution and Deployment
 
-### Windows Executable
+### Standalone Executable Creation
 ```bash
 pip install pyinstaller
 pyinstaller --onefile --windowed main.py
 ```
 
-### Cross-Platform Package
+### Cross-Platform Package Building
 ```bash
 python setup.py sdist bdist_wheel
+pip install twine
+twine upload dist/*
 ```
 
-## Key Components
+## Core Components
 
-- **DCFAnalyzerApp**: Main application window with integrated controls and results display
-- **DataProcessor**: Handles Yahoo Finance data fetching and financial statement processing
-- **DiscountedCashFlowModel**: Core valuation model implementing DCF calculations
-- **Comprehensive Testing**: Unit tests covering both data processing and model calculations
-- **Sensitivity and Scenario Analysis**: Advanced features for risk assessment and valuation modeling
-- **Visual Charts**: Enhanced data visualization for cash flow projections and sensitivity analysis
+- **DCFAnalyzerApp:** Primary application controller managing user interface and workflow
+- **DataProcessor:** Financial data acquisition system with robust error handling
+- **DiscountedCashFlowModel:** Enterprise-grade DCF calculation engine with advanced analytics
+- **DCFCharts:** Professional visualization system for data presentation
+- **Comprehensive Test Suite:** Production-quality unit tests ensuring reliability
 
 ## Troubleshooting
 
-- **Data Fetching Issues**: Ensure you have an active internet connection
-- **Invalid Ticker Errors**: Verify the ticker symbol is correct and publicly traded
-- **Theme Issues**: The application uses sv-ttk for theming; ensure it's properly installed
-- **Permission Errors**: Run with appropriate permissions if installation fails
+- **Network Issues:** Verify internet connectivity for Yahoo Finance API access
+- **Invalid Ticker Symbols:** Confirm ticker exists and is publicly traded
+- **Theme Loading:** Ensure sv-ttk package is correctly installed
+- **Permission Errors:** Run installation with appropriate system permissions
+- **Memory Issues:** Close other applications if experiencing performance degradation
 
-## Future Enhancements
+## Support and Maintenance
 
-- **Monte Carlo Simulation**: Statistical risk assessment with probability distributions
-- **Sector-Specific Models**: Specialized valuation approaches for banks, REITs, and utilities
-- **Historical Comparison**: Track valuation changes over time
-- **Data Export**: Export results to Excel or PDF reports
-- **Database Integration**: Store and retrieve historical analysis data
+This application is designed for professional financial analysis and maintains compatibility with current Python ecosystems. Regular updates ensure continued compatibility with financial data sources and operating system requirements.
+
+## License

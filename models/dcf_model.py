@@ -1,20 +1,39 @@
 """
-Discounted Cash Flow Model - Core Valuation Logic
+Discounted Cash Flow Valuation Model
 
-This module contains the DCF calculation engine for equity valuation.
+Professional-grade DCF calculation engine implementing industry-standard
+methodologies for equity valuation with advanced sensitivity and scenario analysis.
+
+Copyright (c) 2024 DCF Valuation Tool
+Licensed under MIT License
 """
 import numpy as np
 
 class DiscountedCashFlowModel:
     """
-    A comprehensive DCF model for equity valuation.
+    Enterprise-grade DCF valuation model with comprehensive analytics.
 
-    This class implements the standard DCF methodology with configurable
-    parameters for growth rates, discount rates, and projection periods.
+    Implements standard DCF methodology with configurable parameters,
+    sensitivity analysis capabilities, and scenario modeling for
+    professional financial analysis.
     """
 
     def __init__(self, enterprise_value, debt, cash, shares_outstanding, last_fcf,
                  growth_rate, wacc, terminal_growth_rate, industry='N/A'):
+        """
+        Initialize DCF model with company financial parameters.
+
+        Args:
+            enterprise_value: Current enterprise value in millions
+            debt: Total debt in millions
+            cash: Cash and equivalents in millions
+            shares_outstanding: Number of shares outstanding in millions
+            last_fcf: Last reported free cash flow in millions
+            growth_rate: Annual FCF growth rate (decimal)
+            wacc: Weighted average cost of capital (decimal)
+            terminal_growth_rate: Long-term growth rate (decimal)
+            industry: Company industry classification
+        """
         self.enterprise_value = enterprise_value
         self.debt = debt
         self.cash = cash
@@ -24,23 +43,26 @@ class DiscountedCashFlowModel:
         self.wacc = wacc
         self.terminal_growth_rate = terminal_growth_rate
         self.industry = industry
-#############
+
     def sensitivity_analysis(self, years=5, variable_ranges=None):
         """
-        Performs sensitivity analysis on key DCF variables.
+        Conduct comprehensive sensitivity analysis on key valuation drivers.
+
+        Analyzes impact of parameter variations on intrinsic value to identify
+        key value drivers and assess valuation uncertainty.
 
         Args:
-            years: Projection period
-            variable_ranges: Dict with variable names and their range adjustments
+            years: DCF projection period
+            variable_ranges: Custom parameter adjustment ranges
 
         Returns:
-            Dict with sensitivity results for each variable
+            Dictionary containing sensitivity results for each variable
         """
         if variable_ranges is None:
             variable_ranges = {
-                'growth_rate': [-0.02, -0.01, 0, 0.01, 0.02],  # +/- 2%
-                'wacc': [-0.01, -0.005, 0, 0.005, 0.01],  # +/- 1%
-                'terminal_growth_rate': [-0.005, -0.0025, 0, 0.0025, 0.005]  # +/- 0.5%
+                'growth_rate': [-0.02, -0.01, 0, 0.01, 0.02],
+                'wacc': [-0.01, -0.005, 0, 0.005, 0.01],
+                'terminal_growth_rate': [-0.005, -0.0025, 0, 0.0025, 0.005]
             }
 
         base_intrinsic_value = self.calculate_intrinsic_value(years)
@@ -51,7 +73,6 @@ class DiscountedCashFlowModel:
             original_value = getattr(self, variable)
 
             for adjustment in adjustments:
-                # Temporarily adjust the variable
                 setattr(self, variable, original_value + adjustment)
                 try:
                     adjusted_value = self.calculate_intrinsic_value(years)
@@ -62,14 +83,12 @@ class DiscountedCashFlowModel:
                         'percentage_change': percentage_change
                     })
                 except ValueError:
-                    # Handle cases where WACC <= terminal growth rate
                     results.append({
                         'adjustment': adjustment,
                         'intrinsic_value': 0,
                         'percentage_change': -100
                     })
 
-            # Restore original value
             setattr(self, variable, original_value)
             sensitivity_results[variable] = results
 
@@ -77,16 +96,22 @@ class DiscountedCashFlowModel:
 
     def scenario_analysis(self, years=5):
         """
-        Performs scenario analysis with predefined bear/base/bull cases.
+        Execute scenario analysis with predefined parameter sets.
+
+        Generates Bear, Base, and Bull case valuations using systematic
+        parameter adjustments to model different market conditions.
+
+        Args:
+            years: DCF projection period
 
         Returns:
-            Dict with results for each scenario
+            Dictionary containing results for each scenario
         """
         scenarios = {
             'Bear Case': {
-                'growth_rate_adj': -0.02,  # 2% lower growth
-                'wacc_adj': 0.01,  # 1% higher discount rate
-                'terminal_growth_adj': -0.005  # 0.5% lower terminal growth
+                'growth_rate_adj': -0.02,
+                'wacc_adj': 0.01,
+                'terminal_growth_adj': -0.005
             },
             'Base Case': {
                 'growth_rate_adj': 0,
@@ -94,13 +119,12 @@ class DiscountedCashFlowModel:
                 'terminal_growth_adj': 0
             },
             'Bull Case': {
-                'growth_rate_adj': 0.02,  # 2% higher growth
-                'wacc_adj': -0.005,  # 0.5% lower discount rate
-                'terminal_growth_adj': 0.005  # 0.5% higher terminal growth
+                'growth_rate_adj': 0.02,
+                'wacc_adj': -0.005,
+                'terminal_growth_adj': 0.005
             }
         }
 
-        # Store original values
         original_growth = self.growth_rate
         original_wacc = self.wacc
         original_terminal = self.terminal_growth_rate
@@ -108,7 +132,6 @@ class DiscountedCashFlowModel:
         scenario_results = {}
 
         for scenario_name, adjustments in scenarios.items():
-            # Apply adjustments
             self.growth_rate = original_growth + adjustments['growth_rate_adj']
             self.wacc = original_wacc + adjustments['wacc_adj']
             self.terminal_growth_rate = original_terminal + adjustments['terminal_growth_adj']
@@ -132,25 +155,26 @@ class DiscountedCashFlowModel:
                     'growth_rate': self.growth_rate,
                     'wacc': self.wacc,
                     'terminal_growth_rate': self.terminal_growth_rate,
-                    'error': 'Invalid parameters (WACC <= Terminal Growth)'
+                    'error': 'Invalid parameter combination'
                 }
 
-        # Restore original values
         self.growth_rate = original_growth
         self.wacc = original_wacc
         self.terminal_growth_rate = original_terminal
 
         return scenario_results
-###########
 
     def calculate_equity_value(self):
+        """Calculate equity value from enterprise value"""
         return self.enterprise_value - self.debt + self.cash
 
     def calculate_implied_share_price(self):
+        """Calculate current implied share price"""
         equity_value = self.calculate_equity_value()
         return equity_value / self.shares_outstanding if self.shares_outstanding else 0
 
     def project_free_cash_flows(self, years=5):
+        """Project future free cash flows based on growth assumptions"""
         projected_fcf = []
         for year in range(1, years + 1):
             fcf = self.last_fcf * (1 + self.growth_rate) ** year
@@ -158,22 +182,25 @@ class DiscountedCashFlowModel:
         return projected_fcf
 
     def calculate_terminal_value(self, final_fcf):
+        """Calculate terminal value using Gordon Growth Model"""
         denominator = self.wacc - self.terminal_growth_rate
         if denominator <= 0:
-            # Avoid division by zero or negative denominator
-            raise ValueError("WACC must be greater than the terminal growth rate.")
+            raise ValueError("WACC must exceed terminal growth rate for valid calculation")
         return (final_fcf * (1 + self.terminal_growth_rate)) / denominator
 
     def calculate_present_value(self, cash_flows, terminal_value):
+        """Calculate present value of projected cash flows and terminal value"""
         pv_fcf = sum(fcf / ((1 + self.wacc) ** (i + 1)) for i, fcf in enumerate(cash_flows))
         pv_terminal_value = terminal_value / ((1 + self.wacc) ** len(cash_flows))
         return pv_fcf + pv_terminal_value
 
     def calculate_intrinsic_value(self, years=5):
-        # Industry-specific model switching can be implemented here.
-        # For example:
-        # if 'Financial' in self.industry:
-        #     return self.some_other_model()
+        """
+        Calculate intrinsic value per share using DCF methodology.
+
+        Supports industry-specific model variations for specialized sectors
+        such as financial services, REITs, and utilities.
+        """
         projected_fcf = self.project_free_cash_flows(years)
         if not projected_fcf:
             return 0

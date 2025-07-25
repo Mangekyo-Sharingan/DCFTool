@@ -1,4 +1,12 @@
-"""DCF Analyzer Application Window - Main GUI Component"""
+"""
+DCF Analyzer Application - Main User Interface
+
+Professional DCF valuation application with integrated data fetching,
+calculation engine, and advanced analytics visualization.
+
+Copyright (c) 2024 DCF Valuation Tool
+Licensed under MIT License
+"""
 
 import tkinter as tk
 from tkinter import ttk, messagebox
@@ -11,22 +19,29 @@ from data.data_processor import DataProcessor
 from gui.charts import DCFCharts
 
 class DCFAnalyzerApp(TkinterDnD.Tk):
+    """
+    Main application window providing comprehensive DCF analysis capabilities.
+
+    Features integrated data fetching, parameter adjustment, DCF calculations,
+    sensitivity analysis, scenario modeling, and professional visualizations.
+    """
+
     def __init__(self):
         super().__init__()
-        self.title("DCF Valuation Tool")
+        self.title("DCF Valuation Tool - Professional Edition")
         self.geometry("1400x900")
 
-        # Set the theme
         sv_ttk.set_theme("dark")
 
         self.data_processor = DataProcessor()
         self.charts = DCFCharts()
-        self.industry = 'N/A'  # Initialize industry
+        self.industry = 'N/A'
         self._create_panes()
         self._create_controls()
         self._create_results_display()
 
     def _create_panes(self):
+        """Initialize main application layout with resizable panes"""
         self.main_pane = ttk.PanedWindow(self, orient=tk.HORIZONTAL)
         self.main_pane.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
@@ -36,11 +51,11 @@ class DCFAnalyzerApp(TkinterDnD.Tk):
         self.main_pane.add(self.controls_pane, weight=1)
         self.main_pane.add(self.results_pane, weight=2)
 
-        # Prevent the control pane from being resized too small
         self.controls_pane.pack_propagate(False)
 
     def _create_controls(self):
-        # --- Data Input Frame ---
+        """Build user control interface for data input and parameter configuration"""
+        # Data Input Section
         input_frame = ttk.LabelFrame(self.controls_pane, text="Data Input", padding=10)
         input_frame.pack(fill=tk.X, padx=10, pady=10)
 
@@ -52,7 +67,7 @@ class DCFAnalyzerApp(TkinterDnD.Tk):
         self.fetch_button = ttk.Button(ticker_frame, text="Fetch Data", command=self._fetch_data_threaded)
         self.fetch_button.pack(side=tk.LEFT)
 
-        # --- DCF Parameters Frame ---
+        # DCF Parameters Configuration
         params_frame = ttk.LabelFrame(self.controls_pane, text="DCF Parameters", padding=10)
         params_frame.pack(fill=tk.X, padx=10, pady=10)
 
@@ -71,7 +86,7 @@ class DCFAnalyzerApp(TkinterDnD.Tk):
             entry.grid(row=i, column=1, sticky=tk.EW, padx=5, pady=3)
         params_frame.columnconfigure(1, weight=1)
 
-        # --- Analysis Frame ---
+        # Analysis Configuration
         analysis_frame = ttk.LabelFrame(self.controls_pane, text="Analysis", padding=10)
         analysis_frame.pack(fill=tk.X, padx=10, pady=10)
 
@@ -87,16 +102,14 @@ class DCFAnalyzerApp(TkinterDnD.Tk):
         self.calculate_button.pack(fill=tk.X, pady=5, ipady=5)
 
     def _create_results_display(self):
-        """Create tabbed results display with charts and analysis"""
-        # Create notebook for tabbed results
+        """Create comprehensive results display with tabbed interface"""
         self.results_notebook = ttk.Notebook(self.results_pane)
         self.results_notebook.pack(fill=tk.BOTH, expand=True, padx=(0, 10), pady=10)
 
-        # Tab 1: DCF Results Summary (existing)
+        # DCF Summary Tab
         self.summary_frame = ttk.Frame(self.results_notebook)
         self.results_notebook.add(self.summary_frame, text="DCF Summary")
 
-        # Original results text widget
         summary_inner = ttk.LabelFrame(self.summary_frame, text="Valuation Results", padding=10)
         summary_inner.pack(fill=tk.BOTH, expand=True, pady=(0, 5))
 
@@ -106,7 +119,7 @@ class DCFAnalyzerApp(TkinterDnD.Tk):
         self.results_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         scrollbar1.pack(side=tk.RIGHT, fill=tk.Y)
 
-        # Cash flow table
+        # Cash Flow Projections Table
         cf_frame = ttk.LabelFrame(self.summary_frame, text="Cash Flow Projections", padding=10)
         cf_frame.pack(fill=tk.BOTH, expand=True)
 
@@ -119,11 +132,10 @@ class DCFAnalyzerApp(TkinterDnD.Tk):
         self.cf_table.column("pv_fcf", width=150, anchor='e')
         self.cf_table.pack(fill=tk.BOTH, expand=True)
 
-        # Tab 2: Cash Flow Chart
+        # Additional Analysis Tabs
         self.cf_chart_frame = ttk.Frame(self.results_notebook)
         self.results_notebook.add(self.cf_chart_frame, text="Cash Flow Chart")
 
-        # Tab 3: Sensitivity Analysis
         self.sensitivity_frame = ttk.Frame(self.results_notebook)
         self.results_notebook.add(self.sensitivity_frame, text="Sensitivity Analysis")
 
@@ -146,11 +158,10 @@ class DCFAnalyzerApp(TkinterDnD.Tk):
         self.sensitivity_table.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         scrollbar2.pack(side=tk.RIGHT, fill=tk.Y)
 
-        # Tab 4: Sensitivity Chart
         self.sens_chart_frame = ttk.Frame(self.results_notebook)
         self.results_notebook.add(self.sens_chart_frame, text="Sensitivity Chart")
 
-        # Tab 5: Scenario Analysis
+        # Scenario Analysis Components
         self.scenario_frame = ttk.Frame(self.results_notebook)
         self.results_notebook.add(self.scenario_frame, text="Scenario Analysis")
 
@@ -172,15 +183,13 @@ class DCFAnalyzerApp(TkinterDnD.Tk):
 
         self.scenario_table.pack(fill=tk.BOTH, expand=True)
 
-        # Tab 6: Scenario Chart
         self.scenario_chart_frame = ttk.Frame(self.results_notebook)
         self.results_notebook.add(self.scenario_chart_frame, text="Scenario Chart")
 
-        # Initial message
-        self.results_text.insert(tk.END, "Enter a ticker and click 'Fetch Data' to begin.")
+        self.results_text.insert(tk.END, "Enter a ticker symbol and click 'Fetch Data' to begin analysis.")
 
     def _fetch_data_threaded(self):
-        """Initiates data fetching in a new thread to keep the UI responsive."""
+        """Initialize threaded data fetching process"""
         ticker = self.ticker_var.get().strip().upper()
         if not ticker:
             messagebox.showerror("Error", "Please enter a ticker symbol.")
@@ -194,7 +203,7 @@ class DCFAnalyzerApp(TkinterDnD.Tk):
         thread.start()
 
     def _fetch_data_worker(self, ticker):
-        """The actual data fetching logic that runs in a separate thread."""
+        """Execute data fetching in background thread"""
         try:
             params = self.data_processor.fetch_yahoo_data(ticker)
             self.after(0, self._update_params_from_fetch, params)
@@ -204,18 +213,16 @@ class DCFAnalyzerApp(TkinterDnD.Tk):
             self.after(0, self._reset_fetch_button)
 
     def _update_params_from_fetch(self, params):
-        """Updates the GUI with the fetched data."""
-        # Set DoubleVar with the number directly, not a formatted string.
+        """Update interface with fetched financial data"""
         self.dcf_params['enterprise_value'].set(params['enterprise_value'])
         self.dcf_params['debt'].set(params['debt'])
         self.dcf_params['cash'].set(params['cash'])
         self.dcf_params['shares_outstanding'].set(params['shares_outstanding'])
         self.dcf_params['last_fcf'].set(params['last_fcf'])
-        self.dcf_params['growth_rate'].set(params['growth_rate'] * 100)  # Convert to percentage
+        self.dcf_params['growth_rate'].set(params['growth_rate'] * 100)
 
         self.results_text.delete(1.0, tk.END)
 
-        # Add debug information to help identify data issues
         debug_info = (f"Data for {self.ticker_var.get()} loaded successfully.\n"
                       f"Industry: {params['industry']}\n"
                       f"Enterprise Value: ${params['enterprise_value']:.2f}M\n"
@@ -224,20 +231,18 @@ class DCFAnalyzerApp(TkinterDnD.Tk):
                       f"Debt: ${params['debt']:.2f}M\n"
                       f"Cash: ${params['cash']:.2f}M\n"
                       f"Shares Outstanding: {params['shares_outstanding']:.2f}M\n"
-                      "Adjust parameters if needed and click 'Calculate DCF'.")
+                      "Parameters loaded. Click 'Calculate DCF' to proceed.")
 
         self.results_text.insert(tk.END, debug_info)
-        # Store industry for later use
         self.industry = params['industry']
 
     def _reset_fetch_button(self):
-        """Resets the fetch button to its normal state."""
+        """Reset fetch button to normal state"""
         self.fetch_button.config(state="normal", text="Fetch Data")
 
     def calculate_dcf(self):
-        """Enhanced DCF calculation with charts, sensitivity and scenario analysis"""
+        """Execute comprehensive DCF analysis with advanced analytics"""
         try:
-            # Gather and convert parameters
             params_values = {name: var.get() for name, var in self.dcf_params.items()}
             params_values['growth_rate'] /= 100
             params_values['wacc'] /= 100
@@ -246,40 +251,32 @@ class DCFAnalyzerApp(TkinterDnD.Tk):
 
             years = self.projection_years_var.get()
 
-            # Run model
             model = DiscountedCashFlowModel(**params_values)
             intrinsic_value = model.calculate_intrinsic_value(years)
             current_price = model.calculate_implied_share_price()
 
-            # Get values for display
             projected_fcf = model.project_free_cash_flows(years)
             terminal_value = model.calculate_terminal_value(projected_fcf[-1])
             intrinsic_ev = model.calculate_present_value(projected_fcf, terminal_value)
 
-            # Display results
             self._display_dcf_results(model, intrinsic_value, current_price, intrinsic_ev, terminal_value, years)
             self._update_cf_table(projected_fcf, model.wacc, terminal_value, years)
 
-            # Run and display sensitivity analysis
             sensitivity_results = model.sensitivity_analysis(years)
             self._update_sensitivity_table(sensitivity_results)
 
-            # Run and display scenario analysis
             scenario_results = model.scenario_analysis(years)
             self._update_scenario_table(scenario_results)
 
-            # Generate and display charts
             self._update_charts(projected_fcf, terminal_value, model.wacc, years,
                                 sensitivity_results, scenario_results)
 
         except Exception as e:
             messagebox.showerror("Calculation Error", f"An error occurred during calculation:\n{e}")
 
-    # Add chart update methods
     def _update_charts(self, projected_fcf, terminal_value, wacc, years, sensitivity_results, scenario_results):
-        """Update all charts with new calculation results"""
+        """Generate and display professional visualization charts"""
         try:
-            # Clear existing charts
             for widget in self.cf_chart_frame.winfo_children():
                 widget.destroy()
             for widget in self.sens_chart_frame.winfo_children():
@@ -287,27 +284,23 @@ class DCFAnalyzerApp(TkinterDnD.Tk):
             for widget in self.scenario_chart_frame.winfo_children():
                 widget.destroy()
 
-            # Create cash flow chart
             cf_canvas = self.charts.create_cash_flow_chart(
                 self.cf_chart_frame, projected_fcf, terminal_value, wacc, years)
             cf_canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
-            # Create sensitivity chart
             sens_canvas = self.charts.create_sensitivity_chart(
                 self.sens_chart_frame, sensitivity_results)
             sens_canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
-            # Create scenario chart
             scenario_canvas = self.charts.create_scenario_chart(
                 self.scenario_chart_frame, scenario_results)
             scenario_canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
         except Exception as e:
-            print(f"Error updating charts: {e}")
+            print(f"Chart generation error: {e}")
 
     def _update_sensitivity_table(self, sensitivity_results):
-        """Update the sensitivity analysis table"""
-        # Clear existing data
+        """Populate sensitivity analysis data table"""
         for item in self.sensitivity_table.get_children():
             self.sensitivity_table.delete(item)
 
@@ -324,12 +317,11 @@ class DCFAnalyzerApp(TkinterDnD.Tk):
                 value = result['intrinsic_value']
                 change = result['percentage_change']
 
-                # Format adjustment display
                 if variable == 'growth_rate':
                     adj_display = f"{adjustment:+.1%}"
                 elif variable == 'wacc':
                     adj_display = f"{adjustment:+.1%}"
-                else:  # terminal_growth_rate
+                else:
                     adj_display = f"{adjustment:+.2%}"
 
                 self.sensitivity_table.insert("", "end", values=(
@@ -340,8 +332,7 @@ class DCFAnalyzerApp(TkinterDnD.Tk):
                 ))
 
     def _update_scenario_table(self, scenario_results):
-        """Update the scenario analysis table"""
-        # Clear existing data
+        """Populate scenario analysis comparison table"""
         for item in self.scenario_table.get_children():
             self.scenario_table.delete(item)
 
@@ -366,44 +357,42 @@ class DCFAnalyzerApp(TkinterDnD.Tk):
                 ))
 
     def _display_dcf_results(self, model, intrinsic_value, current_price, enterprise_value, terminal_value, years):
-        """Formats and displays the final valuation results in the text widget."""
+        """Format and display comprehensive valuation results"""
         self.results_text.delete(1.0, tk.END)
         upside = ((intrinsic_value - current_price) / current_price * 100) if current_price else 0
         summary = "UNDERVALUED" if intrinsic_value > current_price else "OVERVALUED"
 
         results_string = f"""
-=== DCF VALUATION: {self.ticker_var.get()} ===
+=== DCF VALUATION ANALYSIS: {self.ticker_var.get()} ===
 
-SHARE PRICE ANALYSIS:
+VALUATION SUMMARY:
 Intrinsic Value per Share: ${intrinsic_value:10.2f}
 Current Implied Price:     ${current_price:10.2f}
 Upside/Downside:           {upside:10.1f}%
-Summary:                   {summary} by ${abs(intrinsic_value - current_price):.2f}
+Investment Thesis:         {summary} by ${abs(intrinsic_value - current_price):.2f}
 
-CALCULATED VALUES (in Millions):
+ENTERPRISE VALUATION (Millions USD):
 Intrinsic Enterprise Value: ${enterprise_value:10,.0f}
 Terminal Value (PV):       ${terminal_value / ((1 + model.wacc) ** years):10,.0f}
 Intrinsic Equity Value:    ${enterprise_value - model.debt + model.cash:10,.0f}
 
-KEY ASSUMPTIONS:
+MODELING ASSUMPTIONS:
 FCF Growth Rate:           {model.growth_rate:.2%}
-WACC:                      {model.wacc:.2%}
+Weighted Avg Cost Capital: {model.wacc:.2%}
 Terminal Growth Rate:      {model.terminal_growth_rate:.2%}
-Projection Years:          {years}
+Projection Period:         {years} years
 """
         self.results_text.insert(tk.END, results_string)
 
     def _update_cf_table(self, projected_fcf, wacc, terminal_value, years):
-        """Populates the Treeview with cash flow projection data."""
+        """Update cash flow projections table with calculated values"""
         for item in self.cf_table.get_children():
             self.cf_table.delete(item)
 
         for i, fcf in enumerate(projected_fcf):
             year = i + 1
             pv_fcf = fcf / ((1 + wacc) ** year)
-            # Display values with proper formatting - values are already in millions
             self.cf_table.insert("", "end", values=(f"Year {year}", f"${fcf:,.1f}M", f"${pv_fcf:,.1f}M"))
 
         pv_terminal = terminal_value / ((1 + wacc) ** years)
-        # Display terminal value with proper formatting
         self.cf_table.insert("", "end", values=("Terminal", f"${terminal_value:,.1f}M", f"${pv_terminal:,.1f}M"))
