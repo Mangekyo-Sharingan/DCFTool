@@ -51,6 +51,9 @@ class DataProcessor:
         cash = info.get('totalCash', 0) / 1_000_000
         shares = info.get('sharesOutstanding', 0) / 1_000_000
 
+        # Get current market price
+        current_price = info.get('currentPrice') or info.get('regularMarketPrice') or info.get('previousClose', 0)
+
         # Advanced Free Cash Flow calculation with multiple fallback methods
         try:
             op_cash_flow = 0
@@ -105,5 +108,6 @@ class DataProcessor:
             "shares_outstanding": shares,
             "last_fcf": last_fcf,
             "growth_rate": growth_rate,
-            "industry": info.get('industry', 'N/A')
+            "industry": info.get('industry', 'N/A'),
+            "current_price": current_price
         }

@@ -1,176 +1,61 @@
-# Python DCF Valuation Tool
+# DCF Valuation Tool - Web Edition
 
-This application provides a Discounted Cash Flow (DCF) valuation for publicly traded companies by fetching financial data from Yahoo Finance and allowing users to customize valuation parameters.
+## Overview
+A comprehensive Flask web application for discounted cash flow (DCF) valuation of publicly traded companies. This professional-grade tool provides advanced financial analysis capabilities through an intuitive web interface.
 
 ## Features
+- **Real-time Data Fetching**: Integrates with Yahoo Finance API for live financial data
+- **DCF Calculations**: Professional-grade valuation models with configurable parameters
+- **Interactive Charts**: Dynamic visualizations for cash flow projections, sensitivity analysis, and scenario modeling
+- **Responsive Design**: Modern web interface optimized for desktop and mobile devices
+- **Docker Support**: Containerized deployment for easy scaling and distribution
 
-- **Intuitive GUI:** A user-friendly graphical interface built with `tkinter` and themed with `sv-ttk`.
-- **Dark Theme:** A modern, dark-themed UI for comfortable use.
-- **Automatic Data Fetching:** Retrieves the latest financial data using the `yfinance` library.
-- **Customizable Parameters:** Allows manual adjustment of all DCF parameters including growth rates and WACC.
-- **Real-time Calculations:** Performs DCF calculations with configurable projection periods (3-10 years).
-- **Detailed Results:** Displays intrinsic value, current price comparison, and detailed cash flow projections.
-- **Cash Flow Table:** Visual representation of projected free cash flows and their present values.
-- **Industry Recognition:** Identifies and displays company industry information.
-- **Error Handling:** Robust error handling for invalid tickers and missing data.
-- **Threaded Data Fetching:** Non-blocking data retrieval to maintain UI responsiveness.
+## Quick Start
 
-## Advanced Analysis Features
-
-### Sensitivity Analysis
-- **Variable Impact Assessment:** Shows how ±1-2% changes in growth rate, WACC, and terminal growth rate affect valuation
-- **Tornado Chart Visualization:** Visual representation of which variables have the greatest impact on intrinsic value
-- **Risk Assessment:** Helps understand valuation uncertainty and key value drivers
-
-### Scenario Modeling
-- **Bear Case:** Conservative assumptions with lower growth rates and higher discount rates
-- **Base Case:** Current parameter assumptions
-- **Bull Case:** Optimistic assumptions with higher growth rates and lower discount rates
-- **Upside/Downside Analysis:** Clear visualization of potential returns under different scenarios
-
-### Visual Charts
-- **Cash Flow Projections Chart:** Bar chart comparing projected vs. present value cash flows
-- **Sensitivity Tornado Chart:** Horizontal bar chart showing variable impact ranges
-- **Scenario Comparison Chart:** Side-by-side comparison of bear/base/bull case valuations
-- **Professional Styling:** Dark-themed charts with clear labeling and value annotations
-
-## Project Structure
-```
-DCFtool/
-├── main.py                    # Application entry point
-├── requirements.txt           # Python dependencies
-├── setup.py                   # Package setup for distribution
-├── gui/
-│   ├── __init__.py           # Package initialization
-│   └── app_window.py         # Main application window with integrated controls and results
-├── data/
-│   ├── __init__.py           # Package initialization
-│   └── data_processor.py     # Handles data fetching and processing from Yahoo Finance
-├── models/
-│   ├── __init__.py           # Package initialization
-│   └── dcf_model.py          # Core DCF calculation logic and valuation model
-└── tests/
-    ├── __init__.py           # Package initialization
-    ├── test_data_processor.py # Unit tests for data processing functionality
-    └── test_dcf_model.py      # Unit tests for DCF model calculations
-```
-
-## System Requirements
-
-- **Operating System:** Windows, macOS, or Linux
-- **Python:** 3.7 or higher
-- **Internet Connection:** Required for fetching financial data
-
-## Required Dependencies
-
-The following packages will be automatically installed (see `requirements.txt`):
-- `yfinance` - Yahoo Finance data fetching
-- `sv-ttk` - Modern tkinter theme
-- `tkinterdnd2` - Drag and drop support
-- `pandas` - Data manipulation
-
-## Installation
-
-### Option 1: Direct Installation
-
-1. **Download the Project:**
-   - Download and extract the project files to your desired location
-   - Or clone from repository:
-   ```bash
-   git clone https://github.com/Mangekyo-Sharingan/DCFTool.git
-   cd DCFtool
-   ```
-
-2. **Install Dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Run the Application:**
-   ```bash
-   python main.py
-   ```
-
-### Option 2: Package Installation
-
-1. **Install as a Package:**
-   ```bash
-   pip install -e .
-   ```
-
-2. **Run from anywhere:**
-   ```bash
-   python -m dcftool
-   ```
-
-## Usage Instructions
-
-1. **Launch the Application:**
-   - Execute `python main.py` from the project directory
-   - The application will open with a modern dark theme interface
-
-2. **Perform DCF Analysis:**
-   - Enter a valid stock ticker (e.g., `AAPL`, `MSFT`, `GOOGL`) into the input field
-   - Click the "Fetch Data" button to automatically populate DCF parameters
-   - Review and adjust the DCF parameters as needed (growth rates, WACC, etc.)
-   - Set the desired projection years using the slider (3-10 years)
-   - Click the "Calculate DCF" button to perform the valuation
-   - View results in the summary panel and detailed cash flow projections table
-
-### Running Tests
-
+### Local Development
 ```bash
-# Run all tests with verbose output
-python tests/run_all_tests.py
+# Install dependencies
+pip install -r requirements.txt
 
-# Run specific test modules
-python -m unittest tests.test_dcf_model -v
-python -m unittest tests.test_data_processor -v
-python -m unittest tests.test_charts -v
-python -m unittest tests.test_integration -v
-
-# Run tests with coverage (install coverage first: pip install coverage)
-coverage run -m unittest discover tests
-coverage report -m
-coverage html  # Generates HTML coverage report
-
-## Building for Distribution
-
-### Windows Executable
-```bash
-pip install pyinstaller
-pyinstaller --onefile --windowed main.py
+# Run the application
+python app.py
 ```
 
-### Cross-Platform Package
+### Docker Deployment
 ```bash
-python setup.py sdist bdist_wheel
+# Build and run with Docker Compose
+docker-compose up --build
+
+# Access the application at http://localhost:5000
 ```
 
-## Key Components
+### Production Deployment with Nginx
+```bash
+# Run with nginx reverse proxy
+docker-compose --profile production up --build
 
-- **DCFAnalyzerApp**: Main application window with integrated controls and results display
-- **DataProcessor**: Handles Yahoo Finance data fetching and financial statement processing
-- **DiscountedCashFlowModel**: Core valuation model implementing DCF calculations
-- **Comprehensive Testing**: Unit tests covering both data processing and model calculations
-- **Sensitivity and Scenario Analysis**: Advanced features for risk assessment and valuation modeling
-- **Visual Charts**: Enhanced data visualization for cash flow projections and sensitivity analysis
+# Access the application at http://localhost
+```
 
-## Troubleshooting
+## API Endpoints
+- `GET /` - Main application interface
+- `POST /api/fetch-data` - Fetch financial data for ticker symbol
+- `POST /api/calculate-dcf` - Calculate DCF valuation
+- `POST /api/generate-charts` - Generate analysis charts
 
-- **Data Fetching Issues**: Ensure you have an active internet connection
-- **Invalid Ticker Errors**: Verify the ticker symbol is correct and publicly traded
-- **Theme Issues**: The application uses sv-ttk for theming; ensure it's properly installed
-- **Permission Errors**: Run with appropriate permissions if installation fails
+## Docker Images
+The application includes optimized Docker configuration:
+- Multi-stage build for reduced image size
+- Non-root user for enhanced security
+- Health checks for monitoring
+- Production-ready with gunicorn WSGI server
 
-## Future Enhancements
+## Technology Stack
+- **Backend**: Flask, Python 3.9+
+- **Data**: Yahoo Finance API, Pandas, NumPy
+- **Visualization**: Matplotlib, Seaborn
+- **Frontend**: Bootstrap 5, Vanilla JavaScript
+- **Deployment**: Docker, Gunicorn, Nginx
 
-- **Monte Carlo Simulation**: Statistical risk assessment with probability distributions
-- **Sector-Specific Models**: Specialized valuation approaches for banks, REITs, and utilities
-- **Historical Comparison**: Track valuation changes over time
-- **Data Export**: Export results to Excel or PDF reports
-- **Database Integration**: Store and retrieve historical analysis data
-
-## Media
-<img width="1393" height="929" alt="DCF1" src="https://github.com/user-attachments/assets/fcfbe0c0-b283-4420-b18e-1267cec9d1d9" />
-<img width="1394" height="928" alt="DCF2" src="https://github.com/user-attachments/assets/e046a291-8b0d-4c69-80ca-d937a61de8e4" />
+## License
+MIT License - Professional Edition

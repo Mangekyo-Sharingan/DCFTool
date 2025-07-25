@@ -1,6 +1,6 @@
+flask
+gunicorn
 yfinance
-sv-ttk
-tkinterdnd2
 pandas
 numpy
 matplotlib

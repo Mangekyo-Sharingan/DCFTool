@@ -7,7 +7,6 @@ methodologies for equity valuation with advanced sensitivity and scenario analys
 Copyright (c) 2024 DCF Valuation Tool
 Licensed under MIT License
 """
-import numpy as np
 
 class DiscountedCashFlowModel:
     """
@@ -44,19 +43,74 @@ class DiscountedCashFlowModel:
         self.terminal_growth_rate = terminal_growth_rate
         self.industry = industry
 
+    def calculate_intrinsic_value(self, years=5):
+        """
+        Calculate intrinsic value per share using DCF methodology.
+
+        Args:
+            years: Number of projection years
+
+        Returns:
+            float: Intrinsic value per share
+        """
+        projected_fcf = self._project_free_cash_flows(years)
+        if not projected_fcf:
+            return 0
+
+        final_fcf = projected_fcf[-1]
+        terminal_value = self._calculate_terminal_value(final_fcf)
+        intrinsic_enterprise_value = self._calculate_present_value(projected_fcf, terminal_value)
+        intrinsic_equity_value = intrinsic_enterprise_value - self.debt + self.cash
+
+        return intrinsic_equity_value / self.shares_outstanding if self.shares_outstanding else 0
+
+    def project_cash_flows(self, years=5):
+        """
+        Project cash flows with detailed breakdown for web interface.
+
+        Args:
+            years: Number of projection years
+
+        Returns:
+            dict: Dictionary with projected FCF and additional metrics for visualization
+        """
+        projected_fcf = self._project_free_cash_flows(years)
+
+        # Calculate present values for each year
+        present_values = [
+            fcf / ((1 + self.wacc) ** (i + 1))
+            for i, fcf in enumerate(projected_fcf)
+        ]
+
+        # Calculate terminal value
+        final_fcf = projected_fcf[-1] if projected_fcf else 0
+        terminal_value = 0
+        if final_fcf > 0:
+            try:
+                terminal_value = self._calculate_terminal_value(final_fcf)
+            except ValueError:
+                terminal_value = 0
+
+        return {
+            'projected_fcf': projected_fcf,
+            'present_values': present_values,
+            'terminal_value': terminal_value,
+            'years': list(range(1, years + 1)),
+            'wacc': self.wacc,
+            'growth_rate': self.growth_rate,
+            'terminal_growth_rate': self.terminal_growth_rate
+        }
+
     def sensitivity_analysis(self, years=5, variable_ranges=None):
         """
         Conduct comprehensive sensitivity analysis on key valuation drivers.
-
-        Analyzes impact of parameter variations on intrinsic value to identify
-        key value drivers and assess valuation uncertainty.
 
         Args:
             years: DCF projection period
             variable_ranges: Custom parameter adjustment ranges
 
         Returns:
-            Dictionary containing sensitivity results for each variable
+            dict: Dictionary containing sensitivity results for each variable
         """
         if variable_ranges is None:
             variable_ranges = {
@@ -76,7 +130,7 @@ class DiscountedCashFlowModel:
                 setattr(self, variable, original_value + adjustment)
                 try:
                     adjusted_value = self.calculate_intrinsic_value(years)
-                    percentage_change = ((adjusted_value - base_intrinsic_value) / base_intrinsic_value) * 100
+                    percentage_change = ((adjusted_value - base_intrinsic_value) / base_intrinsic_value) * 100 if base_intrinsic_value else 0
                     results.append({
                         'adjustment': adjustment,
                         'intrinsic_value': adjusted_value,
@@ -98,47 +152,36 @@ class DiscountedCashFlowModel:
         """
         Execute scenario analysis with predefined parameter sets.
 
-        Generates Bear, Base, and Bull case valuations using systematic
-        parameter adjustments to model different market conditions.
-
         Args:
             years: DCF projection period
 
         Returns:
-            Dictionary containing results for each scenario
+            dict: Dictionary containing results for each scenario
         """
         scenarios = {
-            'Bear Case': {
-                'growth_rate_adj': -0.02,
-                'wacc_adj': 0.01,
-                'terminal_growth_adj': -0.005
-            },
-            'Base Case': {
-                'growth_rate_adj': 0,
-                'wacc_adj': 0,
-                'terminal_growth_adj': 0
-            },
-            'Bull Case': {
-                'growth_rate_adj': 0.02,
-                'wacc_adj': -0.005,
-                'terminal_growth_adj': 0.005
-            }
+            'Bear Case': {'growth_rate_adj': -0.02, 'wacc_adj': 0.01, 'terminal_growth_adj': -0.005},
+            'Base Case': {'growth_rate_adj': 0, 'wacc_adj': 0, 'terminal_growth_adj': 0},
+            'Bull Case': {'growth_rate_adj': 0.02, 'wacc_adj': -0.005, 'terminal_growth_adj': 0.005}
         }
 
-        original_growth = self.growth_rate
-        original_wacc = self.wacc
-        original_terminal = self.terminal_growth_rate
+        # Store original values
+        original_values = {
+            'growth_rate': self.growth_rate,
+            'wacc': self.wacc,
+            'terminal_growth_rate': self.terminal_growth_rate
+        }
 
         scenario_results = {}
 
         for scenario_name, adjustments in scenarios.items():
-            self.growth_rate = original_growth + adjustments['growth_rate_adj']
-            self.wacc = original_wacc + adjustments['wacc_adj']
-            self.terminal_growth_rate = original_terminal + adjustments['terminal_growth_adj']
+            # Apply adjustments
+            self.growth_rate = original_values['growth_rate'] + adjustments['growth_rate_adj']
+            self.wacc = original_values['wacc'] + adjustments['wacc_adj']
+            self.terminal_growth_rate = original_values['terminal_growth_rate'] + adjustments['terminal_growth_adj']
 
             try:
                 intrinsic_value = self.calculate_intrinsic_value(years)
-                current_price = self.calculate_implied_share_price()
+                current_price = self._calculate_implied_share_price()
                 upside = ((intrinsic_value - current_price) / current_price * 100) if current_price else 0
 
                 scenario_results[scenario_name] = {
@@ -158,56 +201,33 @@ class DiscountedCashFlowModel:
                     'error': 'Invalid parameter combination'
                 }
 
-        self.growth_rate = original_growth
-        self.wacc = original_wacc
-        self.terminal_growth_rate = original_terminal
+        # Restore original values
+        for key, value in original_values.items():
+            setattr(self, key, value)
 
         return scenario_results
 
-    def calculate_equity_value(self):
-        """Calculate equity value from enterprise value"""
-        return self.enterprise_value - self.debt + self.cash
+    def _project_free_cash_flows(self, years=5):
+        """Project future free cash flows based on growth assumptions."""
+        return [
+            self.last_fcf * (1 + self.growth_rate) ** year
+            for year in range(1, years + 1)
+        ]
 
-    def calculate_implied_share_price(self):
-        """Calculate current implied share price"""
-        equity_value = self.calculate_equity_value()
-        return equity_value / self.shares_outstanding if self.shares_outstanding else 0
-
-    def project_free_cash_flows(self, years=5):
-        """Project future free cash flows based on growth assumptions"""
-        projected_fcf = []
-        for year in range(1, years + 1):
-            fcf = self.last_fcf * (1 + self.growth_rate) ** year
-            projected_fcf.append(fcf)
-        return projected_fcf
-
-    def calculate_terminal_value(self, final_fcf):
-        """Calculate terminal value using Gordon Growth Model"""
+    def _calculate_terminal_value(self, final_fcf):
+        """Calculate terminal value using Gordon Growth Model."""
         denominator = self.wacc - self.terminal_growth_rate
         if denominator <= 0:
             raise ValueError("WACC must exceed terminal growth rate for valid calculation")
         return (final_fcf * (1 + self.terminal_growth_rate)) / denominator
 
-    def calculate_present_value(self, cash_flows, terminal_value):
-        """Calculate present value of projected cash flows and terminal value"""
+    def _calculate_present_value(self, cash_flows, terminal_value):
+        """Calculate present value of projected cash flows and terminal value."""
         pv_fcf = sum(fcf / ((1 + self.wacc) ** (i + 1)) for i, fcf in enumerate(cash_flows))
         pv_terminal_value = terminal_value / ((1 + self.wacc) ** len(cash_flows))
         return pv_fcf + pv_terminal_value
 
-    def calculate_intrinsic_value(self, years=5):
-        """
-        Calculate intrinsic value per share using DCF methodology.
-
-        Supports industry-specific model variations for specialized sectors
-        such as financial services, REITs, and utilities.
-        """
-        projected_fcf = self.project_free_cash_flows(years)
-        if not projected_fcf:
-            return 0
-
-        final_fcf = projected_fcf[-1]
-        terminal_value = self.calculate_terminal_value(final_fcf)
-        intrinsic_enterprise_value = self.calculate_present_value(projected_fcf, terminal_value)
-        intrinsic_equity_value = intrinsic_enterprise_value - self.debt + self.cash
-
-        return intrinsic_equity_value / self.shares_outstanding if self.shares_outstanding else 0
+    def _calculate_implied_share_price(self):
+        """Calculate current implied share price."""
+        equity_value = self.enterprise_value - self.debt + self.cash
+        return equity_value / self.shares_outstanding if self.shares_outstanding else 0

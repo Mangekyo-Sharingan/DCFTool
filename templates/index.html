@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DCF Valuation Tool - Professional Edition</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+        }
+
+        body {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background-color: var(--primary-color) !important;
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        .card {
+            background-color: #2d2d2d;
+            border: 1px solid #444;
+            margin-bottom: 20px;
+        }
+
+        .card-body .form-label {
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .card-header {
+            background-color: var(--secondary-color);
+            border-bottom: 1px solid #444;
+            color: #fff;
+        }
+
+        .form-control, .form-select {
+            background-color: #333;
+            border: 1px solid #555;
+            color: #e0e0e0;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: #333;
+            border-color: var(--accent-color);
+            color: #e0e0e0;
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+        }
+
+        .results-section {
+            display: none;
+        }
+
+        .chart-container {
+            background-color: #333;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            display: none;
+        }
+
+        .spinner-border {
+            color: var(--accent-color);
+        }
+
+        .alert-dark {
+            background-color: #2d2d2d;
+            border-color: #444;
+            color: #e0e0e0;
+        }
+        .alert-dark {
+            background-color: #2d2d2d;
+            border-color: #444;
+            color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <span class="navbar-brand mb-0 h1">
+                <i class="fas fa-chart-line me-2"></i>
+                DCF Valuation Tool - Web Edition
+            </span>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <!-- Control Panel -->
+            <div class="col-lg-4">
+                <!-- Data Input Section -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-download me-2"></i>Data Input</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="ticker" class="form-label">Yahoo Finance Ticker:</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="ticker" value="AAPL" placeholder="e.g., AAPL">
+                                <button class="btn btn-primary" type="button" id="fetchBtn">
+                                    <i class="fas fa-sync-alt me-1"></i>Fetch Data
+                                </button>
+                            </div>
+                        </div>
+                        <div class="loading text-center">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Fetching financial data...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DCF Parameters -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>DCF Parameters</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="enterpriseValue" class="form-label">Enterprise Value (M):</label>
+                            <input type="number" class="form-control" id="enterpriseValue" step="0.01">
+                        </div>
+                        <div class="mb-3">
+                            <label for="debt" class="form-label">Total Debt (M):</label>
+                            <input type="number" class="form-control" id="debt" step="0.01">
+                        </div>
+                        <div class="mb-3">
+                            <label for="cash" class="form-label">Cash & Equivalents (M):</label>
+                            <input type="number" class="form-control" id="cash" step="0.01">
+                        </div>
+                        <div class="mb-3">
+                            <label for="sharesOutstanding" class="form-label">Shares Outstanding (M):</label>
+                            <input type="number" class="form-control" id="sharesOutstanding" step="0.01">
+                        </div>
+                        <div class="mb-3">
+                            <label for="lastFcf" class="form-label">Last FCF (M):</label>
+                            <input type="number" class="form-control" id="lastFcf" step="0.01">
+                        </div>
+                        <div class="mb-3">
+                            <label for="growthRate" class="form-label">FCF Growth Rate (%):</label>
+                            <input type="number" class="form-control" id="growthRate" value="5" step="0.1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="wacc" class="form-label">WACC (%):</label>
+                            <input type="number" class="form-control" id="wacc" value="8" step="0.1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="terminalGrowthRate" class="form-label">Terminal Growth Rate (%):</label>
+                            <input type="number" class="form-control" id="terminalGrowthRate" value="2" step="0.1">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analysis Configuration -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-calculator me-2"></i>Analysis</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="projectionYears" class="form-label">Projection Years: <span id="yearsDisplay">5</span></label>
+                            <input type="range" class="form-range" id="projectionYears" min="3" max="10" value="5">
+                        </div>
+                        <button class="btn btn-success w-100" id="calculateBtn">
+                            <i class="fas fa-chart-line me-1"></i>Calculate DCF
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Panel -->
+            <div class="col-lg-8">
+                <div class="results-section" id="resultsSection">
+                    <!-- Summary Results -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Valuation Results</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="alert alert-dark">
+                                        <h6>Intrinsic Value per Share</h6>
+                                        <h3 class="text-success" id="intrinsicValue">$0.00</h3>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="alert alert-dark">
+                                        <h6>Current Market Price</h6>
+                                        <h3 class="text-info" id="marketPrice">$0.00</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-chart-area me-2"></i>Analysis Charts</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container" id="projectionsChart"></div>
+                            <div class="chart-container" id="sensitivityChart"></div>
+                            <div class="chart-container" id="scenariosChart"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Update projection years display
+        document.getElementById('projectionYears').addEventListener('input', function() {
+            document.getElementById('yearsDisplay').textContent = this.value;
+        });
+
+        // Fetch data functionality
+        document.getElementById('fetchBtn').addEventListener('click', function() {
+            const ticker = document.getElementById('ticker').value.trim();
+            if (!ticker) {
+                alert('Please enter a ticker symbol');
+                return;
+            }
+
+            const loading = document.querySelector('.loading');
+            const btn = this;
+
+            loading.style.display = 'block';
+            btn.disabled = true;
+
+            fetch('/api/fetch-data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ ticker: ticker })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    populateFields(data.data);
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                alert('Error fetching data: ' + error.message);
+            })
+            .finally(() => {
+                loading.style.display = 'none';
+                btn.disabled = false;
+            });
+        });
+
+        // Calculate DCF functionality
+        document.getElementById('calculateBtn').addEventListener('click', function() {
+            const params = gatherParameters();
+            const btn = this;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Calculating...';
+
+            fetch('/api/calculate-dcf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(params)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayResults(data.results);
+                    generateCharts(data.results);
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                alert('Error calculating DCF: ' + error.message);
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-chart-line me-1"></i>Calculate DCF';
+            });
+        });
+
+        function populateFields(data) {
+            document.getElementById('enterpriseValue').value = data.enterprise_value || 0;
+            document.getElementById('debt').value = data.debt || 0;
+            document.getElementById('cash').value = data.cash || 0;
+            document.getElementById('sharesOutstanding').value = data.shares_outstanding || 0;
+            document.getElementById('lastFcf').value = data.last_fcf || 0;
+            document.getElementById('growthRate').value = data.growth_rate || 5;
+            document.getElementById('wacc').value = data.wacc || 8;
+
+            // Update current market price
+            if (data.current_price) {
+                document.getElementById('marketPrice').textContent = '$' + data.current_price.toFixed(2);
+            }
+        }
+
+        function gatherParameters() {
+            return {
+                enterprise_value: parseFloat(document.getElementById('enterpriseValue').value) || 0,
+                debt: parseFloat(document.getElementById('debt').value) || 0,
+                cash: parseFloat(document.getElementById('cash').value) || 0,
+                shares_outstanding: parseFloat(document.getElementById('sharesOutstanding').value) || 0,
+                last_fcf: parseFloat(document.getElementById('lastFcf').value) || 0,
+                growth_rate: parseFloat(document.getElementById('growthRate').value) || 5,
+                wacc: parseFloat(document.getElementById('wacc').value) || 8,
+                terminal_growth_rate: parseFloat(document.getElementById('terminalGrowthRate').value) || 2,
+                projection_years: parseInt(document.getElementById('projectionYears').value) || 5,
+                industry: 'Technology'
+            };
+        }
+
+        function displayResults(results) {
+            document.getElementById('intrinsicValue').textContent = '$' + results.intrinsic_value.toFixed(2);
+            document.getElementById('resultsSection').style.display = 'block';
+        }
+
+        function generateCharts(results) {
+            fetch('/api/generate-charts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(results)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayCharts(data.charts);
+                }
+            })
+            .catch(error => {
+                console.error('Error generating charts:', error);
+            });
+        }
+
+        function displayCharts(charts) {
+            if (charts.projections) {
+                document.getElementById('projectionsChart').innerHTML =
+                    '<img src="data:image/png;base64,' + charts.projections + '" class="img-fluid" alt="Projections Chart">';
+            }
+            if (charts.sensitivity) {
+                document.getElementById('sensitivityChart').innerHTML =
+                    '<img src="data:image/png;base64,' + charts.sensitivity + '" class="img-fluid" alt="Sensitivity Chart">';
+            }
+            if (charts.scenarios) {
+                document.getElementById('scenariosChart').innerHTML =
+                    '<img src="data:image/png;base64,' + charts.scenarios + '" class="img-fluid" alt="Scenarios Chart">';
+            }
+        }
+    </script>
+</body>
+</html>
