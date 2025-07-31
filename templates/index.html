@@ -314,13 +314,17 @@
             });
         });
 
+        // /Users/viviro/PycharmProjects/DCFTool/templates/index.html (inside <script> tag)
+
         function populateFields(data) {
             document.getElementById('enterpriseValue').value = data.enterprise_value || 0;
             document.getElementById('debt').value = data.debt || 0;
             document.getElementById('cash').value = data.cash || 0;
             document.getElementById('sharesOutstanding').value = data.shares_outstanding || 0;
             document.getElementById('lastFcf').value = data.last_fcf || 0;
-            document.getElementById('growthRate').value = data.growth_rate || 5;
+            // FIX: Convert decimal to percentage for display
+            document.getElementById('growthRate').value = (data.growth_rate * 100).toFixed(2) || 5;
+            // You may want to do the same for WACC if you fetch it
             document.getElementById('wacc').value = data.wacc || 8;
 
             // Update current market price

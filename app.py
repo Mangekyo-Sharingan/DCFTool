@@ -16,9 +16,12 @@ import base64
 from models.dcf_model import DiscountedCashFlowModel
 from data.data_processor import DataProcessor
 from gui.charts import DCFCharts
+from config import config
+import os
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'dcf-valuation-tool-secret-key'
+env = os.environ.get('FLASK_ENV', 'development')
+app.config.from_object(config[env])
 
 # Initialize components
 data_processor = DataProcessor()

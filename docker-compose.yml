@@ -1,13 +1,13 @@
-# DCF Valuation Tool - Docker Compose Configuration
+# /Users/viviro/PycharmProjects/DCFTool/docker-compose.yml
+
 version: '3.8'
 
 services:
   dcf-webapp:
     build: .
-    ports:
-      - "5000:5000"
     environment:
       - FLASK_ENV=production
+      - SECRET_KEY=${SECRET_KEY} # Example for loading secret key
       - PYTHONUNBUFFERED=1
     volumes:
       - ./logs:/app/logs
@@ -19,7 +19,6 @@ services:
       retries: 3
       start_period: 40s
 
-  # Optional: Add nginx reverse proxy for production
   nginx:
     image: nginx:alpine
     ports:
