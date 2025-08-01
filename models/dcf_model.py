@@ -18,7 +18,7 @@ class DiscountedCashFlowModel:
     """
 
     def __init__(self, enterprise_value, debt, cash, shares_outstanding, last_fcf,
-                 growth_rate, wacc, terminal_growth_rate, industry='N/A'):
+                 growth_rate, wacc, terminal_growth_rate, industry='N/A', ticker=None):
         """
         Initialize DCF model with company financial parameters.
 
@@ -32,6 +32,7 @@ class DiscountedCashFlowModel:
             wacc: Weighted average cost of capital (decimal)
             terminal_growth_rate: Long-term growth rate (decimal)
             industry: Company industry classification
+            ticker: Stock ticker symbol for price fetching
         """
         self.enterprise_value = enterprise_value
         self.debt = debt
@@ -42,6 +43,8 @@ class DiscountedCashFlowModel:
         self.wacc = wacc
         self.terminal_growth_rate = terminal_growth_rate
         self.industry = industry
+        self.ticker = ticker
+        self._current_price = None
 
     def calculate_intrinsic_value(self, years=5):
         """
@@ -98,7 +101,8 @@ class DiscountedCashFlowModel:
             'years': list(range(1, years + 1)),
             'wacc': self.wacc,
             'growth_rate': self.growth_rate,
-            'terminal_growth_rate': self.terminal_growth_rate
+            'terminal_growth_rate': self.terminal_growth_rate,
+            'current_price': self.get_current_price()
         }
 
     def sensitivity_analysis(self, years=5, variable_ranges=None):
@@ -231,3 +235,37 @@ class DiscountedCashFlowModel:
         """Calculate current implied share price."""
         equity_value = self.enterprise_value - self.debt + self.cash
         return equity_value / self.shares_outstanding if self.shares_outstanding else 0
+
+    def get_current_price(self):
+        """
+        Fetch current market price for the stock.
+
+        Returns:
+            float: Current stock price or calculated implied price if unavailable
+        """
+        if self._current_price is not None:
+            return self._current_price
+
+        if not self.ticker:
+            # Return implied price based on current enterprise value
+            self._current_price = self._calculate_implied_share_price()
+            return self._current_price
+
+        try:
+            # Try to fetch from Yahoo Finance using yfinance
+            import yfinance as yf
+            stock = yf.Ticker(self.ticker)
+            hist = stock.history(period="1d")
+
+            if not hist.empty:
+                self._current_price = float(hist['Close'].iloc[-1])
+                return self._current_price
+            else:
+                # Fallback to implied price
+                self._current_price = self._calculate_implied_share_price()
+                return self._current_price
+
+        except Exception as e:
+            # Fallback to implied price if API fails
+            self._current_price = self._calculate_implied_share_price()
+            return self._current_price

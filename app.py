@@ -1,15 +1,16 @@
 """
-DCF Valuation Tool - Flask Web Application
+DCF Valuation Tool - Flask API Backend
 
-A comprehensive financial analysis web application for discounted cash flow
-valuation of publicly traded companies.
+A REST API for discounted cash flow valuation calculations.
+Serves as the backend for the modern Astro frontend.
 
 Author: DCF Development Team
-Version: 2.0.0 (Web Edition)
+Version: 3.0.0 (API Edition)
 License: MIT
 """
 
-from flask import Flask, render_template, request, jsonify, send_file
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 import json
 import io
 import base64
@@ -18,19 +19,36 @@ from data.data_processor import DataProcessor
 from gui.charts import DCFCharts
 from config import config
 import os
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 env = os.environ.get('FLASK_ENV', 'development')
 app.config.from_object(config[env])
 
+# Enable CORS for frontend communication
+CORS(app, origins=[
+    "http://localhost:3000",  # Astro dev server
+    "http://localhost:4321",  # Alternative Astro port
+    "http://frontend:3000",   # Docker frontend service
+    "http://localhost:4000",  # Additional dev port
+], supports_credentials=True, allow_headers=['Content-Type', 'Authorization'])
+
 # Initialize components
 data_processor = DataProcessor()
 charts = DCFCharts()
 
-@app.route('/')
-def index():
-    """Main application page"""
-    return render_template('index.html')
+@app.route('/api/health', methods=['GET'])
+def health_check():
+    """Health check endpoint for load balancer and monitoring"""
+    return jsonify({
+        'status': 'healthy',
+        'service': 'DCF API Backend',
+        'version': '3.0.0'
+    })
 
 @app.route('/api/fetch-data', methods=['POST'])
 def fetch_data():
@@ -47,13 +65,23 @@ def fetch_data():
             'ticker': ticker
         })
     except Exception as e:
+        logger.error(f"Error fetching data for {ticker}: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/calculate-dcf', methods=['POST'])
 def calculate_dcf():
     """Calculate DCF valuation"""
     try:
+        if not request.json:
+            return jsonify({'error': 'Request body must be JSON'}), 400
+
         params = request.json
+
+        # Validate required parameters
+        required_fields = ['shares_outstanding', 'last_fcf', 'growth_rate', 'wacc', 'terminal_growth_rate']
+        for field in required_fields:
+            if field not in params:
+                return jsonify({'error': f'Missing required field: {field}'}), 400
 
         # Extract parameters
         enterprise_value = params.get('enterprise_value', 0)
@@ -66,6 +94,13 @@ def calculate_dcf():
         terminal_growth_rate = params.get('terminal_growth_rate', 2) / 100  # Convert percentage
         projection_years = params.get('projection_years', 5)
         industry = params.get('industry', 'N/A')
+        ticker = params.get('ticker', '').upper()
+
+        # Validate inputs
+        if shares_outstanding <= 0:
+            return jsonify({'error': 'Shares outstanding must be positive'}), 400
+        if wacc <= terminal_growth_rate:
+            return jsonify({'error': 'WACC must be greater than terminal growth rate'}), 400
 
         # Create DCF model
         dcf_model = DiscountedCashFlowModel(
@@ -88,15 +123,29 @@ def calculate_dcf():
 
         return jsonify({
             'success': True,
-            'results': {
-                'intrinsic_value': intrinsic_value,
+            'data': {
+                'intrinsic_value': round(intrinsic_value, 2),
                 'projections': projections,
                 'sensitivity': sensitivity,
-                'scenarios': scenarios
+                'scenarios': scenarios,
+                'input_parameters': {
+                    'ticker': ticker,
+                    'enterprise_value': enterprise_value,
+                    'debt': debt,
+                    'cash': cash,
+                    'shares_outstanding': shares_outstanding,
+                    'last_fcf': last_fcf,
+                    'growth_rate': growth_rate * 100,
+                    'wacc': wacc * 100,
+                    'terminal_growth_rate': terminal_growth_rate * 100,
+                    'projection_years': projection_years,
+                    'industry': industry
+                }
             }
         })
 
     except Exception as e:
+        logger.error(f"Error in DCF calculation: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/generate-charts', methods=['POST'])
@@ -129,15 +178,16 @@ def generate_charts():
         })
 
     except Exception as e:
+        logger.error(f"Error generating charts: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 @app.errorhandler(404)
 def not_found(error):
-    return render_template('404.html'), 404
+    return jsonify({'error': 'API endpoint not found'}), 404
 
 @app.errorhandler(500)
 def internal_error(error):
-    return render_template('500.html'), 500
+    return jsonify({'error': 'Internal server error'}), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    app.run(host='0.0.0.0', port=5000, debug=True)

@@ -113,14 +113,38 @@ class DCFCharts:
                    fontsize=16, color='white')
             return self._figure_to_base64(fig)
 
-        # Create sample sensitivity data if none provided
-        variables = ['WACC', 'Growth Rate', 'Terminal Growth', 'FCF Growth']
-        low_values = [-15, -20, -25, -18]
-        high_values = [20, 25, 30, 22]
+        # Process actual sensitivity data
+        variables = []
+        low_values = []
+        high_values = []
+
+        variable_names = {
+            'growth_rate': 'Growth Rate',
+            'wacc': 'WACC',
+            'terminal_growth_rate': 'Terminal Growth Rate'
+        }
+
+        for variable, results in sensitivity_data.items():
+            if results and len(results) >= 5:  # Ensure we have enough data points
+                variables.append(variable_names.get(variable, variable))
+
+                # Extract the most negative and most positive percentage changes
+                percentage_changes = [item['percentage_change'] for item in results]
+                min_change = min(percentage_changes)
+                max_change = max(percentage_changes)
+
+                low_values.append(min_change)
+                high_values.append(max_change)
+
+        if not variables:
+            ax.text(0.5, 0.5, 'Insufficient sensitivity data',
+                   transform=ax.transAxes, ha='center', va='center',
+                   fontsize=16, color='white')
+            return self._figure_to_base64(fig)
 
         y_pos = np.arange(len(variables))
 
-        # Create horizontal bars
+        # Create horizontal bars for tornado chart
         bars_low = ax.barh(y_pos, low_values, height=0.4,
                           color='#e74c3c', alpha=0.7, label='Downside')
         bars_high = ax.barh(y_pos, high_values, height=0.4,
@@ -165,12 +189,40 @@ class DCFCharts:
                    fontsize=16, color='white')
             return self._figure_to_base64(fig)
 
-        # Create sample scenario data
-        scenarios = ['Bear Case', 'Base Case', 'Bull Case']
-        values = [85, 120, 165]  # Sample intrinsic values
-        colors = ['#e74c3c', '#f39c12', '#27ae60']
+        # Extract actual scenario data
+        scenarios = []
+        values = []
+        colors = ['#e74c3c', '#f39c12', '#27ae60']  # Red, Orange, Green for Bear, Base, Bull
 
-        bars = ax.bar(scenarios, values, color=colors, alpha=0.8)
+        # Define scenario order for consistent coloring
+        scenario_order = ['Bear Case', 'Base Case', 'Bull Case']
+        color_map = dict(zip(scenario_order, colors))
+
+        # Process actual scenarios data
+        for scenario_name in scenario_order:
+            if scenario_name in scenarios_data:
+                scenario_info = scenarios_data[scenario_name]
+                if 'intrinsic_value' in scenario_info:
+                    scenarios.append(scenario_name)
+                    values.append(scenario_info['intrinsic_value'])
+
+        # If no ordered scenarios found, process whatever is available
+        if not scenarios:
+            for scenario_name, scenario_info in scenarios_data.items():
+                if 'intrinsic_value' in scenario_info:
+                    scenarios.append(scenario_name)
+                    values.append(scenario_info['intrinsic_value'])
+
+        if not scenarios:
+            ax.text(0.5, 0.5, 'No valid scenario data found',
+                   transform=ax.transAxes, ha='center', va='center',
+                   fontsize=16, color='white')
+            return self._figure_to_base64(fig)
+
+        # Assign colors based on scenario names
+        bar_colors = [color_map.get(scenario, colors[i % len(colors)]) for i, scenario in enumerate(scenarios)]
+
+        bars = ax.bar(scenarios, values, color=bar_colors, alpha=0.8)
 
         # Customize chart
         ax.set_ylabel('Intrinsic Value per Share ($)', color='white', fontsize=12)
@@ -180,12 +232,15 @@ class DCFCharts:
         for bar, value in zip(bars, values):
             height = bar.get_height()
             ax.text(bar.get_x() + bar.get_width()/2., height + max(values) * 0.01,
-                   f'${value:.0f}', ha='center', va='bottom', color='white', fontsize=12)
+                   f'${value:.2f}', ha='center', va='bottom', color='white', fontsize=12)
 
         # Style the axes
         ax.tick_params(colors='white')
         for spine in ax.spines.values():
             spine.set_color('white')
+
+        # Rotate x-axis labels if needed
+        plt.setp(ax.get_xticklabels(), rotation=45, ha='right')
 
         fig.tight_layout()
         return self._figure_to_base64(fig)
