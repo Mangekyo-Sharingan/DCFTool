@@ -1,228 +1,188 @@
-# DCF Valuation Tool - Modern Full-Stack Edition
+# Financial Analysis Dashboard - Vibe-code ed.
 
-## 🏗️ Architecture Overview
-A modern, scalable DCF valuation platform built with:
-- **Frontend**: Astro + Tailwind CSS (Node.js)
-- **Backend**: Flask REST API (Python)
-- **Proxy**: Nginx reverse proxy
-- **Deployment**: Docker containers with production security
+A professional-grade financial analysis platform featuring comprehensive DCF valuation tools with plans for expanded financial modeling capabilities.
 
-## ✨ Features
-- **Real-time Market Data**: Live stock price fetching from Yahoo Finance API
-- **Professional DCF Calculations**: Industry-standard valuation models with configurable parameters
-- **Interactive Visualizations**: Dynamic charts for cash flow projections, sensitivity analysis, and scenario modeling
-- **Modern UI/UX**: Responsive design with Tailwind CSS and professional styling
-- **Production-Ready**: Secure Docker deployment with Nginx reverse proxy
+## 🚀 Features
 
-## 🚀 Quick Start
+### Current Tools
+- **DCF Valuation Tool**: Professional discounted cash flow analysis with sensitivity testing and scenario modeling
+  - Multi-year cash flow projections (5, 10, or 15 years)
+  - Real-time company data fetching via stock ticker
+  - Interactive charts and visualizations
+  - Comprehensive sensitivity analysis
+  - Professional reporting and detailed projections table
+
+### Platform Features
+- **Dark Mode**: Toggle-able dark/light theme with system preference detection
+- **Responsive Design**: Works seamlessly on desktop, tablet, and mobile devices
+- **Professional UI**: Clean, modern interface built with Tailwind CSS
+- **Real-time Charts**: Interactive visualizations using Chart.js
+- **RESTful API**: Backend API for financial calculations and data processing
+
+### Coming Soon
+- Portfolio Analysis & Optimization
+- Monte Carlo Simulation
+- Options Pricing (Black-Scholes & Binomial Models)
+- Credit Risk Assessment
+- Bond Pricing & Fixed Income Analysis
+
+## 🏗️ Architecture
+
+### Frontend (Astro + Tailwind CSS)
+- **Dashboard**: `/` - Main landing page with tool overview
+- **DCF Tool**: `/dcf-tool` - Dedicated DCF analysis interface
+- **Dark Mode**: Global theme toggle with localStorage persistence
+- **Responsive**: Mobile-first design with dark mode support
+
+### Backend (Python + Flask)
+- **API Endpoints**: RESTful API for financial calculations
+- **Data Processing**: Real-time company data fetching and processing
+- **DCF Engine**: Professional-grade valuation calculations
+- **Error Handling**: Comprehensive error handling and validation
+
+### Key Components
+```
+├── frontend/                 # Astro frontend application
+│   ├── src/
+│   │   ├── layouts/         # Layout components with dark mode
+│   │   └── pages/           # Dashboard and tool pages
+├── models/                  # Financial calculation models
+├── data/                    # Data processing and API integration
+├── gui/                     # Chart generation and visualization
+└── tests/                   # Comprehensive test suite
+```
+
+## 🛠️ Installation & Setup
 
 ### Prerequisites
-- Docker and Docker Compose
-- Node.js 18+ (for local development)
-- Python 3.9+ (for local development)
+- Python 3.8+
+- Node.js 16+
+- npm or yarn
 
-## 🐳 Docker Deployment (Recommended)
-
-### Production Deployment
+### Backend Setup
 ```bash
-# Stop any existing containers
-docker-compose down
+# Clone the repository
+git clone <repository-url>
+cd DCFTool
 
-# Build and start all services
-docker-compose up --build -d
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Access the application at http://localhost
-```
-
-### Check Service Status
-```bash
-# View all container status
-docker-compose ps
-
-# View real-time logs
-docker-compose logs -f
-
-# View specific service logs
-docker-compose logs -f frontend
-docker-compose logs -f backend
-docker-compose logs -f nginx
-```
-
-### Stop Services
-```bash
-# Stop all containers
-docker-compose down
-
-# Stop and remove volumes (clean reset)
-docker-compose down -v
-```
-
-## 💻 Local Development
-
-### Backend (Flask API)
-```bash
-# Install Python dependencies
+# Install dependencies
 pip install -r requirements.txt
 
-# Run Flask API (port 5000)
+# Run the backend server
 python app.py
-
-# API will be available at http://localhost:5000/api
 ```
 
-### Frontend (Astro)
+### Frontend Setup
 ```bash
 # Navigate to frontend directory
 cd frontend
 
-# Install Node.js dependencies
+# Install dependencies
 npm install
 
-# Run Astro development server (port 3000)
+# Start development server
 npm run dev
 
-# Frontend will be available at http://localhost:3000
+# Build for production
+npm run build
 ```
 
-## 🔧 Architecture Details
-
-### Service Communication
-- **Nginx** (Port 80/443) → Routes traffic to appropriate services
-- **Frontend** (Port 3000) → Astro application serving the UI
-- **Backend** (Port 5000) → Flask API handling DCF calculations
-- **Internal Network** → Services communicate via Docker network
-
-### API Endpoints
-- `GET /api/health` - Health check endpoint
-- `POST /api/fetch-data` - Fetch financial data for ticker symbol
-- `POST /api/calculate-dcf` - Calculate DCF valuation with sensitivity and scenario analysis
-- `POST /api/generate-charts` - Generate analysis charts (server-side rendering)
-
-### Frontend Routes
-- `/` - Main DCF calculator interface
-- All API calls are proxied through Nginx to the Flask backend
-
-## 🔒 Security Features
-
-### Production Security
-- **Non-root containers** with specific user IDs
-- **Rate limiting** on API endpoints
-- **CORS protection** with allowed origins
-- **Security headers** (XSS, CSRF, etc.)
-- **No direct port exposure** (only through Nginx)
-- **SSL/HTTPS ready** (uncomment in nginx.conf)
-
-### Docker Security
-- Multi-stage builds to reduce attack surface
-- Minimal base images (Alpine Linux)
-- Health checks for monitoring
-- Volume management for logs
-
-## 📊 Features in Detail
-
-### DCF Calculation Engine
-- **Cash Flow Projections**: 5-20 year configurable projections
-- **Terminal Value**: Gordon Growth Model implementation
-- **Sensitivity Analysis**: Tornado charts for key variables
-- **Scenario Analysis**: Bear/Base/Bull case modeling
-- **Real-time Pricing**: Live market data integration
-
-### Modern Frontend
-- **Responsive Design**: Works on desktop, tablet, and mobile
-- **Interactive Charts**: Chart.js integration for visualizations
-- **Real-time Updates**: Dynamic form validation and calculations
-- **Professional Styling**: Clean, modern interface with Tailwind CSS
-- **Error Handling**: Comprehensive user feedback and error states
-
-## 🛠️ Development Commands
-
-### Docker Development
+### Docker Deployment
 ```bash
-# Rebuild specific service
-docker-compose build backend
-docker-compose build frontend
-
-# Scale services (if needed)
-docker-compose up --scale backend=2
-
-# Execute commands in running containers
-docker-compose exec backend python -c "print('Backend running')"
-docker-compose exec frontend npm list
+# Build and run with Docker Compose
+docker-compose up --build
 ```
 
-### Debugging
+## 📊 DCF Tool Usage
+
+### Basic Workflow
+1. **Access Tool**: Navigate to `/dcf-tool` from the dashboard
+2. **Company Data**: Enter stock ticker and fetch company data automatically
+3. **Financial Inputs**: Provide required financial parameters:
+   - Shares Outstanding (required)
+   - Last Free Cash Flow (required)
+   - Growth Rate (required)
+   - WACC - Weighted Average Cost of Capital (required)
+   - Terminal Growth Rate (required)
+   - Optional: Enterprise Value, Debt, Cash & Equivalents
+4. **Calculate**: Run DCF analysis to get intrinsic valuation
+5. **Review Results**: Analyze charts, sensitivity data, and detailed projections
+
+### Key Metrics Calculated
+- **Intrinsic Value per Share**: Based on discounted future cash flows
+- **Upside/Downside**: Comparison with current market price
+- **Cash Flow Projections**: Multi-year forward-looking estimates
+- **Sensitivity Analysis**: Impact of WACC variations on valuation
+- **Present Value Breakdown**: Detailed year-by-year analysis
+
+## 🎨 Dark Mode
+
+The platform features a comprehensive dark mode implementation:
+- **Global Toggle**: Fixed-position button accessible from any page
+- **Theme Persistence**: Preferences saved in localStorage
+- **System Detection**: Automatically detects OS dark mode preference
+- **Dynamic Charts**: Chart colors adapt to current theme
+- **Smooth Transitions**: All elements transition smoothly between themes
+
+## 🔧 API Endpoints
+
+### Company Data
+```http
+GET /api/company-data/{ticker}
+```
+Fetches real-time company financial data for a given stock ticker.
+
+### DCF Calculation
+```http
+POST /api/calculate-dcf
+Content-Type: application/json
+
+{
+  "ticker": "AAPL",
+  "shares_outstanding": 15000,
+  "last_fcf": 95000,
+  "growth_rate": 5.0,
+  "wacc": 8.0,
+  "terminal_growth_rate": 2.0,
+  "projection_years": 10
+}
+```
+
+## 🧪 Testing
+
+Run the comprehensive test suite:
 ```bash
-# View detailed logs with timestamps
-docker-compose logs -f --timestamps
+# Run all tests
+python tests/run_all.py
 
-# Check container resource usage
-docker stats $(docker-compose ps -q)
-
-# Enter container shell for debugging
-docker-compose exec backend bash
-docker-compose exec frontend sh
+# Run specific test categories
+python -m pytest tests/test_dcf_model.py
+python -m pytest tests/test_data_processor.py
+python -m pytest tests/test_integration.py
 ```
 
-## 🔧 Configuration
+## 📈 Future Roadmap
 
-### Environment Variables
-- `FLASK_ENV`: Set to 'production' for production deployment
-- `NODE_ENV`: Set to 'production' for optimized frontend builds
-- `API_URL`: Backend API URL (configured automatically in Docker)
+### Phase 2: Portfolio Analysis
+- Modern Portfolio Theory implementation
+- Risk-return optimization
+- Efficient frontier analysis
+- Portfolio performance tracking
 
-### Customization
-- **Nginx Config**: Edit `nginx.conf` for SSL, domains, or routing changes
-- **Frontend Styling**: Modify `frontend/tailwind.config.mjs` for design customization
-- **Backend API**: Extend `app.py` for additional endpoints or features
+### Phase 3: Advanced Modeling
+- Monte Carlo simulation engine
+- Options pricing models (Black-Scholes, Binomial)
+- Credit risk modeling and scoring
+- Fixed income analysis tools
 
-## 📈 Performance
+## 📞 Support
 
-### Optimizations
-- **Gzip compression** enabled in Nginx
-- **Static asset caching** with long expiry headers
-- **Connection pooling** between services
-- **Multi-stage Docker builds** for smaller images
-- **Asset optimization** in Astro production builds
-
-## 🚨 Troubleshooting
-
-### Common Issues
-```bash
-# Port conflicts
-docker-compose down && docker system prune -f
-
-# Rebuild from scratch
-docker-compose down -v
-docker system prune -a -f
-docker-compose up --build --force-recreate
-
-# Check service health
-curl http://localhost/health
-curl http://localhost/api/health
-```
-
-### Development Issues
-```bash
-# Frontend not connecting to backend
-# Check CORS settings in app.py and API_URL in frontend
-
-# Charts not updating
-# Verify chart.js is loaded and data is being passed correctly
-
-# Docker permission issues (Linux/Mac)
-sudo chown -R $USER:$USER .
-```
-
-## 📝 License
-MIT License - See LICENSE file for details
-
-## 🤝 Contributing
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test with Docker deployment
-5. Submit a pull request
+For questions, feature requests, or bug reports, please open an issue on GitHub.
 
 ---
 
-**Note**: This application has been refactored from a Flask monolith to a modern microservices architecture with enhanced security, performance, and scalability.
+**Built with AI️ and vibes for hobby investors**

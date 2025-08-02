@@ -56,16 +56,59 @@ class DiscountedCashFlowModel:
         Returns:
             float: Intrinsic value per share
         """
+        #print(f"DEBUG: Starting DCF calculation with years={years}")
+        #print(f"DEBUG: Input parameters - last_fcf={self.last_fcf}, growth_rate={self.growth_rate}")
+        #print(f"DEBUG: Input parameters - wacc={self.wacc}, terminal_growth_rate={self.terminal_growth_rate}")
+        #print(f"DEBUG: Input parameters - debt={self.debt}, cash={self.cash}, shares_outstanding={self.shares_outstanding}")
+
+        # Project future free cash flows
         projected_fcf = self._project_free_cash_flows(years)
+        print(f"DEBUG: Projected FCF = {projected_fcf}")
+
         if not projected_fcf:
+            print("DEBUG: No projected FCF, returning 0")
             return 0
 
-        final_fcf = projected_fcf[-1]
-        terminal_value = self._calculate_terminal_value(final_fcf)
-        intrinsic_enterprise_value = self._calculate_present_value(projected_fcf, terminal_value)
-        intrinsic_equity_value = intrinsic_enterprise_value - self.debt + self.cash
+        # Calculate present value of projected cash flows
+        pv_fcf = 0
+        for i, fcf in enumerate(projected_fcf):
+            if fcf > 0:
+                pv = fcf / ((1 + self.wacc) ** (i + 1))
+                pv_fcf += pv
+                print(f"DEBUG: Year {i+1}: FCF={fcf}, PV={pv}")
 
-        return intrinsic_equity_value / self.shares_outstanding if self.shares_outstanding else 0
+        print(f"DEBUG: Total PV of FCF = {pv_fcf}")
+
+        # Calculate terminal value and its present value
+        final_fcf = projected_fcf[-1]
+        print(f"DEBUG: Final FCF = {final_fcf}")
+
+        if final_fcf > 0 and self.wacc > self.terminal_growth_rate:
+            terminal_fcf = final_fcf * (1 + self.terminal_growth_rate)
+            terminal_value = terminal_fcf / (self.wacc - self.terminal_growth_rate)
+            pv_terminal_value = terminal_value / ((1 + self.wacc) ** years)
+            print(f"DEBUG: Terminal FCF = {terminal_fcf}")
+            print(f"DEBUG: Terminal Value = {terminal_value}")
+            print(f"DEBUG: PV Terminal Value = {pv_terminal_value}")
+        else:
+            pv_terminal_value = 0
+            print(f"DEBUG: Terminal value set to 0 (final_fcf={final_fcf}, wacc={self.wacc}, terminal_growth={self.terminal_growth_rate})")
+
+        # Calculate enterprise value (sum of PV of FCF and PV of terminal value)
+        enterprise_value = pv_fcf + pv_terminal_value
+        print(f"DEBUG: Enterprise Value = {enterprise_value}")
+
+        # Calculate equity value (enterprise value - debt + cash)
+        equity_value = enterprise_value - self.debt + self.cash
+        print(f"DEBUG: Equity Value = {equity_value} (EV={enterprise_value} - debt={self.debt} + cash={self.cash})")
+
+        # Calculate intrinsic value per share
+        intrinsic_value_per_share = equity_value / self.shares_outstanding if self.shares_outstanding > 0 else 0
+        print(f"DEBUG: Intrinsic Value per Share = {intrinsic_value_per_share}")
+
+        result = max(intrinsic_value_per_share, 0)  # Ensure non-negative result
+        print(f"DEBUG: Final result = {result}")
+        return result
 
     def project_cash_flows(self, years=5):
         """
