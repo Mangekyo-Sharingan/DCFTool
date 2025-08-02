@@ -1,0 +1,32 @@
+{
+  "name": "dcf-frontend",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Modern DCF Valuation Tool Frontend built with Astro and Tailwind CSS",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/node": "^8.2.0",
+    "@astrojs/tailwind": "^5.1.0",
+    "astro": "^4.4.0",
+    "tailwindcss": "^3.4.0",
+    "chart.js": "^4.4.0",
+    "chartjs-adapter-date-fns": "^3.0.0",
+    "date-fns": "^3.3.1",
+    "axios": "^1.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "autoprefixer": "^10.4.17",
+    "postcss": "^8.4.33"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+

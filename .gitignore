@@ -1,5 +1,3 @@
-/frontend/.astro/settings.json
-/frontend/.astro/types.d.ts
 /frontend/node_modules/.bin/acorn
 /frontend/node_modules/.bin/acorn.cmd
 /frontend/node_modules/.bin/acorn.ps1
@@ -16947,12 +16945,3 @@
 /frontend/node_modules/zwitch/package.json
 /frontend/node_modules/zwitch/readme.md
 /frontend/node_modules/.package-lock.json
-/frontend/src/layouts/Layout.astro
-/frontend/src/pages/index.astro
-/frontend/src/env.d.ts
-/frontend/.env.development
-/frontend/astro.config.mjs
-/frontend/Dockerfile
-/frontend/package.json
-/frontend/package-lock.json
-/frontend/tailwind.config.mjs
