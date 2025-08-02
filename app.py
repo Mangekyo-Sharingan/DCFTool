@@ -35,6 +35,9 @@ CORS(app, origins=[
     "http://localhost:4321",  # Alternative Astro port
     "http://frontend:3000",   # Docker frontend service
     "http://localhost:4000",  # Additional dev port
+    "http://localhost",       # Docker nginx proxy
+    "http://localhost:80",    # Docker nginx proxy with port
+    "*"                       # Allow all origins for development (remove in production)
 ], supports_credentials=True, allow_headers=['Content-Type', 'Authorization'])
 
 # Initialize components
