@@ -1,699 +1,435 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { Navigation } from '../components/Navigation';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { Badge } from '../components/ui/badge';
+import { Separator } from '../components/ui/separator';
+import { FinancialInputs } from '../components/FinancialInputs';
+import { AnalysisCharts } from '../components/AnalysisCharts';
+import NotificationBar from '../components/NotificationBar';
+import "../styles/global.css";
 ---
 
 <Layout title="DCF Valuation Tool" description="Professional DCF analysis and company valuation platform">
-  <div id="app" class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-blue-900 transition-colors duration-200">
-    <!-- Notification Bar -->
-    <div id="notification-bar" class="fixed top-0 left-0 w-full z-50 transform -translate-y-full transition-transform duration-300 ease-in-out">
-      <div id="notification-content" class="px-6 py-4 text-white font-medium text-center flex items-center justify-between shadow-lg">
-        <div class="flex items-center">
-          <svg id="notification-icon" class="w-5 h-5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-            <!-- Icon will be set dynamically -->
-          </svg>
-          <span id="notification-message">Notification message</span>
-        </div>
-        <button id="notification-close" class="ml-4 text-white hover:text-gray-200 transition-colors">
-          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-          </svg>
-        </button>
-      </div>
-    </div>
+  <NotificationBar client:load />
 
-    <!-- Navigation Header -->
-    <nav class="bg-white dark:bg-gray-800 shadow-lg border-b border-gray-200 dark:border-gray-700">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-          <div class="flex items-center">
-            <div class="flex-shrink-0">
-              <a href="/" class="text-2xl font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                DCF Valuation Tool
-              </a>
-            </div>
-          </div>
-          <div class="flex items-center space-x-4">
-            <a href="/" class="text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
-              ← Back to Dashboard
-            </a>
-            <span class="text-sm text-gray-600 dark:text-gray-300">Hobbyist's Financial Tools</span>
-          </div>
+  <Navigation title="DCF Valuation Tool" showBackButton={true} client:load />
+
+  <div id="app" class="min-h-screen bg-gradient-to-br from-background to-muted/20">
+    <!-- Hero Section -->
+    <section class="py-12 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-7xl mx-auto text-center">
+        <h1 class="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
+          Discounted Cash Flow Analysis
+        </h1>
+        <p class="text-lg text-muted-foreground max-w-3xl mx-auto mb-8">
+          Professional-grade DCF valuation with comprehensive sensitivity analysis and scenario modeling
+        </p>
+        <div class="flex flex-wrap justify-center gap-2">
+          <Badge variant="secondary">Real-time Data</Badge>
+          <Badge variant="secondary">Multi-year Projections</Badge>
+          <Badge variant="secondary">Sensitivity Analysis</Badge>
+          <Badge variant="secondary">Interactive Charts</Badge>
         </div>
       </div>
-    </nav>
+    </section>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-      <!-- Hero Section -->
-      <div class="text-center mb-12">
-        <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-          Discounted Cash Flow Analysis
-        </h2>
-        <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-          Hobby-grade DCF valuation with comprehensive sensitivity analysis and scenario modeling
-        </p>
-      </div>
-
-      <!-- Input Form Section -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-        <!-- Company Information -->
-        <div class="lg:col-span-1">
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Company Information</h3>
-
-            <div class="space-y-4">
-              <div>
-                <label for="ticker" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Stock Ticker
-                </label>
-                <input
-                  type="text"
+    <main class="max-w-7xl mx-auto pb-12 px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Company Information & Inputs -->
+        <div class="lg:col-span-1 space-y-6">
+          <!-- Company Information -->
+          <Card>
+            <CardHeader>
+              <CardTitle class="flex items-center space-x-2">
+                <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m11 0a2 2 0 01-2 2H7a2 2 0 01-2-2m2-4h2m0 0h2m-2 0h2m-6 0h-2v2m0-2h2m-4 0h2m2-2h2m0 0h2"></path>
+                </svg>
+                <span>Company Information</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent class="space-y-4">
+              <div class="space-y-2">
+                <Label htmlFor="ticker">Stock Ticker</Label>
+                <Input
                   id="ticker"
                   placeholder="e.g., AAPL"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                  className="w-full"
                 />
-                <button
+                <Button
                   id="fetch-data-btn"
-                  class="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition duration-200"
+                  className="w-full"
                 >
                   Fetch Company Data
-                </button>
+                </Button>
               </div>
 
-              <div>
-                <label for="industry" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Industry
-                </label>
-                <input
-                  type="text"
+              <div class="space-y-2">
+                <Label htmlFor="industry">Industry</Label>
+                <Input
                   id="industry"
                   placeholder="e.g., Technology"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Financial Inputs -->
-        <div class="lg:col-span-2">
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Financial Parameters</h3>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label for="enterprise_value" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Enterprise Value (M)
-                </label>
-                <input
-                  type="number"
-                  id="enterprise_value"
-                  placeholder="0"
-                  step="0.01"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                  className="w-full"
                 />
               </div>
 
-              <div>
-                <label for="debt" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Total Debt (M)
-                </label>
-                <input
-                  type="number"
-                  id="debt"
-                  placeholder="0"
-                  step="0.01"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+              <div class="space-y-2">
+                <Label htmlFor="company-name">Company Name</Label>
+                <Input
+                  id="company-name"
+                  placeholder="Will be populated automatically"
+                  className="w-full"
+                  disabled
                 />
               </div>
+            </CardContent>
+          </Card>
 
-              <div>
-                <label for="cash" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Cash & Equivalents (M)
-                </label>
-                <input
-                  type="number"
-                  id="cash"
-                  placeholder="0"
-                  step="0.01"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                />
-              </div>
+          <!-- Financial Inputs -->
+          <FinancialInputs client:load />
 
-              <div>
-                <label for="shares_outstanding" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Shares Outstanding (M) *
-                </label>
-                <input
-                  type="number"
-                  id="shares_outstanding"
-                  placeholder="0"
-                  step="0.01"
-                  required
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                />
-              </div>
-
-              <div>
-                <label for="last_fcf" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Last FCF (M) *
-                </label>
-                <input
-                  type="number"
-                  id="last_fcf"
-                  placeholder="0"
-                  step="0.01"
-                  required
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                />
-              </div>
-
-              <div>
-                <label for="growth_rate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Growth Rate (%) *
-                </label>
-                <input
-                  type="number"
-                  id="growth_rate"
-                  placeholder="5"
-                  step="0.1"
-                  required
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                />
-              </div>
-
-              <div>
-                <label for="wacc" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  WACC (%) *
-                </label>
-                <input
-                  type="number"
-                  id="wacc"
-                  placeholder="8"
-                  step="0.1"
-                  required
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                />
-              </div>
-
-              <div>
-                <label for="terminal_growth_rate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Terminal Growth Rate (%) *
-                </label>
-                <input
-                  type="number"
-                  id="terminal_growth_rate"
-                  placeholder="2"
-                  step="0.1"
-                  required
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                />
-              </div>
-
-              <div>
-                <label for="projection_years" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Projection Years
-                </label>
-                <select
-                  id="projection_years"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                >
+          <!-- Analysis Options -->
+          <Card>
+            <CardHeader>
+              <CardTitle class="flex items-center space-x-2">
+                <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                <span>Analysis Options</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent class="space-y-4">
+              <div class="space-y-2">
+                <Label htmlFor="projection-years">Projection Years</Label>
+                <select id="projection-years" class="w-full px-3 py-2 border border-input bg-background rounded-md">
                   <option value="5">5 Years</option>
                   <option value="10">10 Years</option>
                   <option value="15">15 Years</option>
                 </select>
               </div>
-            </div>
 
-            <div class="mt-6">
-              <button
-                id="calculate-btn"
-                class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200"
-              >
+              <Separator />
+
+              <Button id="calculate-dcf" className="w-full" size="lg">
                 Calculate DCF Valuation
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Results Section -->
-      <div id="results-section" class="hidden">
-        <!-- Summary Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center border border-gray-200 dark:border-gray-700">
-            <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">Intrinsic Value</h4>
-            <div class="text-3xl font-bold text-green-600 dark:text-green-400" id="intrinsic-value">$0.00</div>
-          </div>
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center border border-gray-200 dark:border-gray-700">
-            <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">Current Price</h4>
-            <div class="text-3xl font-bold text-blue-600 dark:text-blue-400" id="current-price">$0.00</div>
-          </div>
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center border border-gray-200 dark:border-gray-700">
-            <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">Upside/Downside</h4>
-            <div class="text-3xl font-bold" id="upside-downside">0%</div>
-          </div>
+              </Button>
+            </CardContent>
+          </Card>
         </div>
 
-        <!-- Charts Section -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
-            <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Cash Flow Projections</h4>
-            <div class="w-full h-64 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-              <canvas id="cashFlowChart" class="w-full h-full"></canvas>
-            </div>
-          </div>
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
-            <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Sensitivity Analysis</h4>
-            <div class="w-full h-64 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-              <canvas id="sensitivityChart" class="w-full h-full"></canvas>
-            </div>
-          </div>
-        </div>
+        <!-- Results Section -->
+        <div class="lg:col-span-2 space-y-6">
+          <!-- Valuation Results -->
+          <Card>
+            <CardHeader>
+              <CardTitle class="flex items-center space-x-2">
+                <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                </svg>
+                <span>Valuation Results</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div id="results-container" class="text-center py-12 text-muted-foreground">
+                <svg class="w-16 h-16 mx-auto mb-4 text-muted-foreground/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                <p class="text-lg font-medium mb-2">Ready for Analysis</p>
+                <p>Enter company information and financial inputs to calculate DCF valuation</p>
+              </div>
+            </CardContent>
+          </Card>
 
-        <!-- Detailed Results Table -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
-          <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Detailed Projections</h4>
-          <div class="overflow-x-auto">
-            <table id="projections-table" class="min-w-full table-auto">
-              <thead>
-                <tr class="bg-gray-50 dark:bg-gray-700">
-                  <th class="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Year</th>
-                  <th class="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">FCF ($M)</th>
-                  <th class="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">PV Factor</th>
-                  <th class="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Present Value ($M)</th>
-                </tr>
-              </thead>
-              <tbody id="projections-body" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                <!-- Projections will be inserted here -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+          <!-- Charts Section -->
+          <AnalysisCharts client:load />
 
-      <!-- Loading Indicator -->
-      <div id="loading-indicator" class="hidden text-center py-8">
-        <div class="inline-flex items-center">
-          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mr-3"></div>
-          <span class="text-gray-700 dark:text-gray-300">Calculating valuation...</span>
+          <!-- Detailed Projections Table -->
+          <Card>
+            <CardHeader>
+              <CardTitle class="flex items-center space-x-2">
+                <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h2a2 2 0 002-2z"></path>
+                </svg>
+                <span>Detailed Projections</span>
+              </CardTitle>
+              <CardDescription>
+                Year-by-year financial projections and free cash flow calculations
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div id="projections-table" class="overflow-x-auto">
+                <div class="text-center py-8 text-muted-foreground">
+                  <p>Detailed projections table will appear here after calculation</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </main>
   </div>
 
-  <!-- Chart.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+  <!-- Scripts for DCF functionality -->
   <script>
-    // API Configuration
-    const API_BASE_URL = window.location.origin + '/api';
-
-    // DOM Elements
-    const tickerInput = document.getElementById('ticker');
-    const fetchDataBtn = document.getElementById('fetch-data-btn');
-    const calculateBtn = document.getElementById('calculate-btn');
-    const resultsSection = document.getElementById('results-section');
-    const loadingIndicator = document.getElementById('loading-indicator');
-
-    // Notification system
-    const notificationBar = document.getElementById('notification-bar');
-    const notificationContent = document.getElementById('notification-content');
-    const notificationIcon = document.getElementById('notification-icon');
-    const notificationMessage = document.getElementById('notification-message');
-    const notificationClose = document.getElementById('notification-close');
-
-    // Notification types
-    const NOTIFICATION_TYPES = {
-      success: {
-        bg: 'bg-green-600',
-        icon: `<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>`
-      },
-      error: {
-        bg: 'bg-red-600',
-        icon: `<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>`
-      },
-      warning: {
-        bg: 'bg-yellow-600',
-        icon: `<path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>`
-      },
-      info: {
-        bg: 'bg-blue-600',
-        icon: `<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>`
-      }
-    };
-
-    let notificationTimeout;
-
-    function showNotification(message, type = 'info', duration = 5000) {
-      // Clear any existing timeout
-      if (notificationTimeout) {
-        clearTimeout(notificationTimeout);
-      }
-
-      const notification = NOTIFICATION_TYPES[type] || NOTIFICATION_TYPES.info;
-
-      // Set the content
-      notificationMessage.textContent = message;
-      notificationIcon.innerHTML = notification.icon;
-
-      // Remove all background classes and add the new one
-      notificationContent.className = notificationContent.className.replace(/bg-\w+-\d+/g, '');
-      notificationContent.classList.add(notification.bg);
-
-      // Show the notification with slide-down animation
-      notificationBar.classList.remove('-translate-y-full');
-      notificationBar.classList.add('translate-y-0');
-
-      // Auto-hide after duration
-      notificationTimeout = setTimeout(() => {
-        hideNotification();
-      }, duration);
+    // Enhanced notification system
+    function showNotification(type: string, message: string) {
+      // Create a custom event to trigger the notification
+      window.dispatchEvent(new CustomEvent('showNotification', {
+        detail: { type, message }
+      }));
     }
 
-    function hideNotification() {
-      notificationBar.classList.remove('translate-y-0');
-      notificationBar.classList.add('-translate-y-full');
-    }
+    // DCF calculation logic
+    document.addEventListener('DOMContentLoaded', function() {
+      const fetchDataBtn = document.getElementById('fetch-data-btn');
+      const calculateBtn = document.getElementById('calculate-dcf');
 
-    // Close button event listener
-    notificationClose.addEventListener('click', hideNotification);
+      if (fetchDataBtn) {
+        fetchDataBtn.addEventListener('click', async function() {
+          const tickerElement = document.getElementById('ticker') as HTMLInputElement;
+          const ticker = tickerElement?.value?.trim().toUpperCase();
 
-    // Charts
-    let cashFlowChart = null;
-    let sensitivityChart = null;
-
-    // Fetch company data from API
-    fetchDataBtn.addEventListener('click', async () => {
-      const ticker = tickerInput.value.trim().toUpperCase();
-      if (!ticker) {
-        showNotification('Please enter a stock ticker', 'warning');
-        return;
-      }
-
-      fetchDataBtn.disabled = true;
-      fetchDataBtn.textContent = 'Fetching...';
-
-      try {
-        const response = await fetch(`${API_BASE_URL}/company-data/${ticker}`);
-        if (!response.ok) throw new Error('Failed to fetch company data');
-
-        const data = await response.json();
-
-        // Populate form fields
-        if (data.shares_outstanding) document.getElementById('shares_outstanding').value = data.shares_outstanding;
-        if (data.debt) document.getElementById('debt').value = data.debt;
-        if (data.cash) document.getElementById('cash').value = data.cash;
-        if (data.enterprise_value) document.getElementById('enterprise_value').value = data.enterprise_value;
-        if (data.industry) document.getElementById('industry').value = data.industry;
-        if (data.last_fcf) document.getElementById('last_fcf').value = data.last_fcf;
-
-        showNotification(`Company data for ${ticker} fetched successfully!`, 'success');
-      } catch (error) {
-        console.error('Error fetching company data:', error);
-        showNotification('Failed to fetch company data. Please enter manually.', 'error');
-      } finally {
-        fetchDataBtn.disabled = false;
-        fetchDataBtn.textContent = 'Fetch Company Data';
-      }
-    });
-
-    // Calculate DCF
-    calculateBtn.addEventListener('click', async () => {
-      // Validate required fields
-      const requiredFields = ['shares_outstanding', 'last_fcf', 'growth_rate', 'wacc', 'terminal_growth_rate'];
-      const missingFields = requiredFields.filter(field => !document.getElementById(field).value);
-
-      if (missingFields.length > 0) {
-        showNotification('Please fill in all required fields (marked with *)', 'warning');
-        return;
-      }
-
-      // Show loading
-      loadingIndicator.classList.remove('hidden');
-      resultsSection.classList.add('hidden');
-      calculateBtn.disabled = true;
-
-      // Collect form data
-      const formData = {
-        ticker: tickerInput.value.trim().toUpperCase(),
-        industry: document.getElementById('industry').value,
-        enterprise_value: parseFloat(document.getElementById('enterprise_value').value) || 0,
-        debt: parseFloat(document.getElementById('debt').value) || 0,
-        cash: parseFloat(document.getElementById('cash').value) || 0,
-        shares_outstanding: parseFloat(document.getElementById('shares_outstanding').value),
-        last_fcf: parseFloat(document.getElementById('last_fcf').value),
-        growth_rate: parseFloat(document.getElementById('growth_rate').value),
-        wacc: parseFloat(document.getElementById('wacc').value),
-        terminal_growth_rate: parseFloat(document.getElementById('terminal_growth_rate').value),
-        projection_years: parseInt(document.getElementById('projection_years').value)
-      };
-
-      try {
-        console.log('Sending DCF calculation request with data:', formData);
-
-        const response = await fetch(`${API_BASE_URL}/calculate-dcf`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData)
-        });
-
-        console.log('Response status:', response.status);
-        console.log('Response status text:', response.statusText);
-
-        // Always try to get the JSON response, even if status is not ok
-        let results;
-        try {
-          results = await response.json();
-          console.log('Response body:', results);
-        } catch (jsonError) {
-          console.error('Failed to parse JSON response:', jsonError);
-          throw new Error(`Server returned status ${response.status} but response was not valid JSON`);
-        }
-
-        // Check for API errors in the response body
-        if (!response.ok) {
-          const errorMessage = results.error || `HTTP ${response.status}: ${response.statusText}`;
-          throw new Error(`API Error: ${errorMessage}`);
-        }
-
-        // Check if the response has the expected structure
-        if (!results || typeof results.intrinsic_value === 'undefined') {
-          console.error('Invalid response structure:', results);
-          throw new Error('Invalid response format from API - missing intrinsic_value');
-        }
-
-        // Check if the response indicates success
-        if (results.success === false) {
-          const errorMessage = results.error || 'Unknown error from API';
-          throw new Error(`API returned error: ${errorMessage}`);
-        }
-
-        console.log('DCF calculation successful:', results);
-        displayResults(results);
-        showNotification('DCF valuation calculated successfully!', 'success');
-      } catch (error) {
-        console.error('Error calculating DCF:', error);
-        console.error('Error details:', {
-          message: error.message,
-          stack: error.stack
-        });
-
-        // Provide more specific error message
-        const errorMessage = error.message.includes('API Error:') || error.message.includes('API returned error:')
-          ? error.message
-          : 'Calculation failed. Please check your inputs and try again.';
-
-        showNotification(errorMessage, 'error');
-      } finally {
-        loadingIndicator.classList.add('hidden');
-        calculateBtn.disabled = false;
-      }
-    });
-
-    function displayResults(results) {
-      // Update summary cards
-      document.getElementById('intrinsic-value').textContent = `$${results.intrinsic_value.toFixed(2)}`;
-      document.getElementById('current-price').textContent = `$${(results.current_price || 0).toFixed(2)}`;
-
-      const upside = results.current_price ?
-        ((results.intrinsic_value - results.current_price) / results.current_price * 100) : 0;
-      const upsideElement = document.getElementById('upside-downside');
-      upsideElement.textContent = `${upside.toFixed(1)}%`;
-      upsideElement.className = `text-3xl font-bold ${upside >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`;
-
-      // Create charts using Chart.js
-      createCashFlowChart(results.projections);
-      createSensitivityChart(results.sensitivity_analysis);
-
-      // Populate projections table
-      populateProjectionsTable(results.projections);
-
-      // Show results
-      resultsSection.classList.remove('hidden');
-    }
-
-    function createCashFlowChart(projections) {
-      const ctx = document.getElementById('cashFlowChart').getContext('2d');
-
-      if (cashFlowChart) cashFlowChart.destroy();
-
-      // Validate projections data
-      if (!projections || !Array.isArray(projections) || projections.length === 0) {
-        console.error('Invalid projections data:', projections);
-        return;
-      }
-
-      const isDark = document.documentElement.classList.contains('dark');
-      const textColor = isDark ? '#e5e7eb' : '#374151';
-      const gridColor = isDark ? '#374151' : '#e5e7eb';
-
-      cashFlowChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: projections.map(p => `Year ${p.year}`),
-          datasets: [{
-            label: 'Free Cash Flow ($M)',
-            data: projections.map(p => p.fcf),
-            borderColor: '#3b82f6',
-            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-            borderWidth: 2,
-            fill: true,
-            tension: 0.1
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            y: {
-              beginAtZero: true,
-              ticks: {
-                color: textColor,
-                callback: function(value) {
-                  return '$' + value.toFixed(0) + 'M';
-                }
-              },
-              grid: { color: gridColor }
-            },
-            x: {
-              ticks: { color: textColor },
-              grid: { color: gridColor }
-            }
-          },
-          plugins: {
-            legend: {
-              labels: { color: textColor }
-            }
+          if (!ticker) {
+            showNotification('warning', 'Please enter a stock ticker symbol');
+            return;
           }
-        }
-      });
-    }
 
-    function createSensitivityChart(sensitivityData) {
-      const ctx = document.getElementById('sensitivityChart').getContext('2d');
+          try {
+            const button = this as HTMLButtonElement;
+            button.disabled = true;
+            button.textContent = 'Fetching...';
 
-      if (sensitivityChart) sensitivityChart.destroy();
+            showNotification('info', 'Fetching company data...');
 
-      // Validate sensitivity data
-      if (!sensitivityData || !Array.isArray(sensitivityData)) {
-        console.error('Invalid sensitivity data:', sensitivityData);
-        sensitivityData = [0, 0, 0];
-      }
+            const response = await fetch(`/api/company-data/${ticker}`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+              }
+            });
 
-      const isDark = document.documentElement.classList.contains('dark');
-      const textColor = isDark ? '#e5e7eb' : '#374151';
-      const gridColor = isDark ? '#374151' : '#e5e7eb';
+            const data = await response.json();
 
-      sensitivityChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ['WACC -1%', 'WACC Base', 'WACC +1%'],
-          datasets: [{
-            label: 'Intrinsic Value ($)',
-            data: sensitivityData,
-            backgroundColor: ['#10b981', '#3b82f6', '#ef4444'],
-            borderColor: ['#059669', '#2563eb', '#dc2626'],
-            borderWidth: 1
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            y: {
-              beginAtZero: true,
-              ticks: {
-                color: textColor,
-                callback: function(value) {
-                  return '$' + value.toFixed(0);
-                }
-              },
-              grid: { color: gridColor }
-            },
-            x: {
-              ticks: { color: textColor },
-              grid: { color: gridColor }
+            if (data.success) {
+              // Populate form fields with fetched data
+              const companyNameElement = document.getElementById('company-name') as HTMLInputElement;
+              const industryElement = document.getElementById('industry') as HTMLInputElement;
+
+              // Populate the correct financial input fields
+              const enterpriseValueElement = document.getElementById('enterprise-value') as HTMLInputElement;
+              const debtElement = document.getElementById('debt') as HTMLInputElement;
+              const cashElement = document.getElementById('cash') as HTMLInputElement;
+              const sharesOutstandingElement = document.getElementById('shares-outstanding') as HTMLInputElement;
+              const lastFCFElement = document.getElementById('last-fcf') as HTMLInputElement;
+              const growthRateElement = document.getElementById('growth-rate') as HTMLInputElement;
+
+              // Set company name (use ticker if company name not available)
+              if (companyNameElement) {
+                companyNameElement.value = data.company_name || ticker;
+              }
+
+              // Set industry
+              if (data.industry && industryElement) {
+                industryElement.value = data.industry;
+              }
+
+              // Populate financial fields with actual data from backend
+              if (data.enterprise_value && enterpriseValueElement) {
+                enterpriseValueElement.value = data.enterprise_value.toFixed(1);
+              }
+
+              if (data.debt && debtElement) {
+                debtElement.value = data.debt.toFixed(1);
+              }
+
+              if (data.cash && cashElement) {
+                cashElement.value = data.cash.toFixed(1);
+              }
+
+              if (data.shares_outstanding && sharesOutstandingElement) {
+                sharesOutstandingElement.value = data.shares_outstanding.toFixed(1);
+              }
+
+              if (data.last_fcf && lastFCFElement) {
+                lastFCFElement.value = data.last_fcf.toFixed(1);
+              }
+
+              if (data.growth_rate && growthRateElement) {
+                growthRateElement.value = (data.growth_rate * 100).toFixed(1);
+              }
+
+              // Trigger event for FinancialInputs component to update
+              window.dispatchEvent(new CustomEvent('companyDataFetched', {
+                detail: data
+              }));
+
+              showNotification('success', `Successfully fetched data for ${ticker}! FCF: $${data.last_fcf?.toFixed(1) || 'N/A'}M`);
+            } else {
+              showNotification('error', data.message || 'Failed to fetch company data');
             }
-          },
-          plugins: {
-            legend: {
-              labels: { color: textColor }
-            }
+          } catch (error) {
+            console.error('Error fetching data:', error);
+            showNotification('error', 'Network error while fetching data');
+          } finally {
+            const button = this as HTMLButtonElement;
+            button.disabled = false;
+            button.textContent = 'Fetch Company Data';
           }
-        }
-      });
-    }
-
-    function populateProjectionsTable(projections) {
-      const tbody = document.getElementById('projections-body');
-      tbody.innerHTML = '';
-
-      projections.forEach(projection => {
-        const row = document.createElement('tr');
-        row.className = 'hover:bg-gray-50 dark:hover:bg-gray-700';
-        row.innerHTML = `
-          <td class="px-4 py-2 text-sm text-gray-900 dark:text-gray-100">${projection.year}</td>
-          <td class="px-4 py-2 text-sm text-gray-900 dark:text-gray-100">$${projection.fcf.toFixed(2)}</td>
-          <td class="px-4 py-2 text-sm text-gray-900 dark:text-gray-100">${projection.pv_factor.toFixed(4)}</td>
-          <td class="px-4 py-2 text-sm text-gray-900 dark:text-gray-100">$${projection.present_value.toFixed(2)}</td>
-        `;
-        tbody.appendChild(row);
-      });
-    }
-
-    // Update charts when theme changes
-    const observer = new MutationObserver(() => {
-      if (cashFlowChart) {
-        const isDark = document.documentElement.classList.contains('dark');
-        const textColor = isDark ? '#e5e7eb' : '#374151';
-        const gridColor = isDark ? '#374151' : '#e5e7eb';
-
-        cashFlowChart.options.scales.y.ticks.color = textColor;
-        cashFlowChart.options.scales.y.grid.color = gridColor;
-        cashFlowChart.options.scales.x.ticks.color = textColor;
-        cashFlowChart.options.scales.x.grid.color = gridColor;
-        cashFlowChart.options.plugins.legend.labels.color = textColor;
-        cashFlowChart.update();
+        });
       }
 
-      if (sensitivityChart) {
-        const isDark = document.documentElement.classList.contains('dark');
-        const textColor = isDark ? '#e5e7eb' : '#374151';
-        const gridColor = isDark ? '#374151' : '#e5e7eb';
+      if (calculateBtn) {
+        calculateBtn.addEventListener('click', async function() {
+          showNotification('info', 'Calculating DCF valuation...');
 
-        sensitivityChart.options.scales.y.ticks.color = textColor;
-        sensitivityChart.options.scales.y.grid.color = gridColor;
-        sensitivityChart.options.scales.x.ticks.color = textColor;
-        sensitivityChart.options.scales.x.grid.color = gridColor;
-        sensitivityChart.options.plugins.legend.labels.color = textColor;
-        sensitivityChart.update();
+          try {
+            // Collect all the input data from the form with correct parameter names
+            const ticker = (document.getElementById('ticker') as HTMLInputElement)?.value?.trim().toUpperCase();
+            const enterpriseValue = parseFloat((document.getElementById('enterprise-value') as HTMLInputElement)?.value || '0');
+            const debt = parseFloat((document.getElementById('debt') as HTMLInputElement)?.value || '0');
+            const cash = parseFloat((document.getElementById('cash') as HTMLInputElement)?.value || '0');
+            const sharesOutstanding = parseFloat((document.getElementById('shares-outstanding') as HTMLInputElement)?.value || '0');
+            const lastFCF = parseFloat((document.getElementById('last-fcf') as HTMLInputElement)?.value || '0');
+            const growthRate = parseFloat((document.getElementById('growth-rate') as HTMLInputElement)?.value || '5');
+            const wacc = parseFloat((document.getElementById('wacc') as HTMLInputElement)?.value || '10');
+            const terminalGrowth = parseFloat((document.getElementById('terminal-growth') as HTMLInputElement)?.value || '2.5');
+            const projectionYears = parseInt((document.getElementById('projection-years') as HTMLSelectElement)?.value || '5');
+
+            // Validate inputs
+            if (!ticker) {
+              showNotification('warning', 'Please enter a stock ticker symbol first');
+              return;
+            }
+
+            if (lastFCF <= 0) {
+              showNotification('warning', 'Please fetch company data or enter Last FCF manually');
+              return;
+            }
+
+            if (sharesOutstanding <= 0) {
+              showNotification('warning', 'Please enter shares outstanding');
+              return;
+            }
+
+            // Prepare DCF calculation data with exact parameter structure
+            const dcfData = {
+              ticker: ticker,
+              enterprise_value: enterpriseValue,
+              debt: debt,
+              cash: cash,
+              shares_outstanding: sharesOutstanding,
+              last_fcf: lastFCF,
+              growth_rate: growthRate,
+              wacc: wacc,
+              terminal_growth_rate: terminalGrowth,
+              projection_years: projectionYears,
+              industry: (document.getElementById('industry') as HTMLInputElement)?.value || 'N/A'
+            };
+
+            const response = await fetch('/api/calculate-dcf', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(dcfData)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+              // Display results in the results container
+              const resultsContainer = document.getElementById('results-container');
+              if (resultsContainer) {
+                resultsContainer.innerHTML = `
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+                    <div class="bg-primary/5 rounded-lg p-4">
+                      <h3 class="font-semibold text-lg mb-2">Fair Value per Share</h3>
+                      <p class="text-2xl font-bold text-primary">$${result.intrinsic_value?.toFixed(2) || 'N/A'}</p>
+                      ${result.current_price ? `<p class="text-sm text-muted-foreground mt-1">Current: $${result.current_price.toFixed(2)}</p>` : ''}
+                    </div>
+                    <div class="bg-muted rounded-lg p-4">
+                      <h3 class="font-semibold text-lg mb-2">Enterprise Value</h3>
+                      <p class="text-xl font-semibold">$${result.input_parameters?.enterprise_value?.toFixed(1) || 'N/A'}M</p>
+                    </div>
+                    <div class="bg-muted rounded-lg p-4">
+                      <h3 class="font-semibold text-lg mb-2">Total FCF (${projectionYears} years)</h3>
+                      <p class="text-xl font-semibold">$${result.projections?.reduce((sum, proj) => sum + (proj.present_value || 0), 0).toFixed(1) || 'N/A'}M</p>
+                    </div>
+                  </div>
+                  <div class="mt-6 text-center">
+                    <p class="text-sm text-muted-foreground">
+                      Based on ${projectionYears}-year projection with ${growthRate}% growth rate and ${wacc}% WACC
+                    </p>
+                  </div>
+                `;
+              }
+
+              // Update projections table
+              const projectionsTable = document.getElementById('projections-table');
+              if (projectionsTable && result.projections) {
+                let tableHTML = `
+                  <table class="w-full text-sm">
+                    <thead>
+                      <tr class="border-b">
+                        <th class="text-left p-2">Year</th>
+                        <th class="text-right p-2">FCF ($M)</th>
+                        <th class="text-right p-2">PV Factor</th>
+                        <th class="text-right p-2">Present Value ($M)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                `;
+
+                result.projections.forEach((proj: any) => {
+                  tableHTML += `
+                    <tr class="border-b hover:bg-muted/50">
+                      <td class="p-2">${proj.year}</td>
+                      <td class="text-right p-2">$${proj.fcf?.toFixed(1) || '0.0'}</td>
+                      <td class="text-right p-2">${proj.pv_factor?.toFixed(4) || '0.0000'}</td>
+                      <td class="text-right p-2">$${proj.present_value?.toFixed(1) || '0.0'}</td>
+                    </tr>
+                  `;
+                });
+
+                tableHTML += `
+                    </tbody>
+                    <tfoot>
+                      <tr class="border-t-2 font-semibold">
+                        <td class="p-2">Total</td>
+                        <td class="text-right p-2">-</td>
+                        <td class="text-right p-2">-</td>
+                        <td class="text-right p-2">$${result.projections.reduce((sum: number, proj: any) => sum + (proj.present_value || 0), 0).toFixed(1)}</td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                `;
+
+                projectionsTable.innerHTML = tableHTML;
+              }
+
+              // Trigger chart updates with all available data
+              window.dispatchEvent(new CustomEvent('dcfResultsCalculated', {
+                detail: {
+                  projections: result.projections,
+                  sensitivity_analysis: result.sensitivity_analysis,
+                  scenarios: result.scenarios || {}
+                }
+              }));
+
+              showNotification('success', `DCF calculation completed! Fair value: $${result.intrinsic_value?.toFixed(2) || 'N/A'} per share`);
+            } else {
+              showNotification('error', result.error || 'DCF calculation failed');
+            }
+          } catch (error) {
+            console.error('Error calculating DCF:', error);
+            showNotification('error', 'Network error during DCF calculation');
+          }
+        });
       }
-    });
-
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['class']
     });
   </script>
 </Layout>
