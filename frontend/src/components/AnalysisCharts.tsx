@@ -152,16 +152,16 @@ export const AnalysisCharts: React.FC = () => {
           {
             label: 'Free Cash Flow',
             data: fcfData,
-            borderColor: 'rgb(59, 130, 246)',
-            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            borderColor: 'hsl(215, 28%, 17%)', // Dark slate
+            backgroundColor: 'hsla(215, 28%, 17%, 0.1)', // Dark slate with transparency
             tension: 0.1,
             fill: true
           },
           {
             label: 'Present Value',
             data: pvData,
-            borderColor: 'rgb(16, 185, 129)',
-            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            borderColor: 'hsl(215, 16%, 47%)', // Medium slate
+            backgroundColor: 'hsla(215, 16%, 47%, 0.1)', // Medium slate with transparency
             tension: 0.1,
             fill: true
           }
@@ -225,14 +225,14 @@ export const AnalysisCharts: React.FC = () => {
           label: 'Intrinsic Value',
           data: values,
           backgroundColor: [
-            'rgba(34, 197, 94, 0.8)',
-            'rgba(59, 130, 246, 0.8)',
-            'rgba(239, 68, 68, 0.8)'
+            'hsla(215, 28%, 17%, 0.8)', // Dark slate
+            'hsla(215, 16%, 47%, 0.8)', // Medium slate
+            'hsla(215, 14%, 65%, 0.8)'  // Light slate
           ],
           borderColor: [
-            'rgb(34, 197, 94)',
-            'rgb(59, 130, 246)',
-            'rgb(239, 68, 68)'
+            'hsl(215, 28%, 17%)', // Dark slate
+            'hsl(215, 16%, 47%)', // Medium slate
+            'hsl(215, 14%, 65%)'  // Light slate
           ],
           borderWidth: 2
         }]
@@ -298,26 +298,31 @@ export const AnalysisCharts: React.FC = () => {
       chartData = [0, 0, 0];
     }
 
+    // Monochrome slate palette for chart segments
+    const slateColors = [
+      'hsla(215, 28%, 17%, 0.8)', // Darkest slate
+      'hsla(215, 20%, 35%, 0.8)', // Dark slate
+      'hsla(215, 16%, 47%, 0.8)', // Medium slate
+      'hsla(215, 14%, 65%, 0.8)', // Light slate
+      'hsla(214, 32%, 85%, 0.8)'  // Very light slate
+    ];
+
+    const slateBorders = [
+      'hsl(215, 28%, 17%)', // Darkest slate
+      'hsl(215, 20%, 35%)', // Dark slate
+      'hsl(215, 16%, 47%)', // Medium slate
+      'hsl(215, 14%, 65%)', // Light slate
+      'hsl(214, 32%, 85%)'  // Very light slate
+    ];
+
     const chart = new window.Chart(ctx, {
       type: 'doughnut',
       data: {
         labels: labels,
         datasets: [{
           data: chartData,
-          backgroundColor: [
-            'rgba(239, 68, 68, 0.8)',
-            'rgba(59, 130, 246, 0.8)',
-            'rgba(34, 197, 94, 0.8)',
-            'rgba(245, 158, 11, 0.8)',
-            'rgba(168, 85, 247, 0.8)'
-          ].slice(0, labels.length),
-          borderColor: [
-            'rgb(239, 68, 68)',
-            'rgb(59, 130, 246)',
-            'rgb(34, 197, 94)',
-            'rgb(245, 158, 11)',
-            'rgb(168, 85, 247)'
-          ].slice(0, labels.length),
+          backgroundColor: slateColors.slice(0, labels.length),
+          borderColor: slateBorders.slice(0, labels.length),
           borderWidth: 2
         }]
       },

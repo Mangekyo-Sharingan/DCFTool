@@ -21,7 +21,7 @@ export const Navigation: React.FC<NavigationProps> = ({
   };
 
   return (
-    <nav className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 sticky top-0 z-40">
+    <nav className="bg-card border-b border-border sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center space-x-4">
@@ -36,7 +36,7 @@ export const Navigation: React.FC<NavigationProps> = ({
               </Button>
             )}
             <div className="flex-shrink-0">
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+              <h1 className="text-xl font-bold text-foreground">
                 {title}
               </h1>
             </div>
