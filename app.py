@@ -26,18 +26,16 @@ env = os.environ.get('FLASK_ENV', 'development')
 app.config.from_object(config[env])
 
 # Enable CORS for frontend communication
-CORS(app, origins=[
-    "http://localhost:3000",  # Astro dev server
-    "http://localhost:4321",  # Alternative Astro port
-    "http://frontend:3000",   # Docker frontend service
-    "http://localhost:4000",  # Additional dev port
-    "http://localhost",       # Docker nginx proxy
-    "http://localhost:80",    # Docker nginx proxy with port
-    "*"                       # Allow all origins for development (remove in production)
-], supports_credentials=True, allow_headers=['Content-Type', 'Authorization'])
+allowed_origins = os.environ.get('CORS_ALLOWED_ORIGINS', 'http://localhost:3000,http://frontend:3000').split(',')
+CORS(app, origins=allowed_origins, supports_credentials=True, allow_headers=['Content-Type', 'Authorization'])
 
 # Initialize components
 data_processor = DataProcessor()
+
+@app.route('/', methods=['GET'])
+def root():
+    """Root endpoint for health check"""
+    return jsonify({'status': 'ok'})
 
 @app.route('/api/health', methods=['GET'])
 def health_check():

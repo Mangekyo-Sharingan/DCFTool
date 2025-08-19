@@ -39,15 +39,13 @@ services:
     image: nginx:alpine
     container_name: dcf_nginx
     restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - ./ssl:/etc/nginx/ssl:ro
       - nginx_logs:/var/log/nginx
     networks:
       - dcf_network
+      - actual_proxy-network
     depends_on:
       - frontend
       - backend
@@ -65,3 +63,5 @@ volumes:
 networks:
   dcf_network:
     driver: bridge
+  actual_proxy-network:
+    external: true
