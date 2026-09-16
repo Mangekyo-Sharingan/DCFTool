@@ -3,6 +3,8 @@ Flask app for the DCF valuation tool.
 """
 
 import os
+import webbrowser
+import threading
 from flask import Flask, render_template, request, jsonify
 from models.dcf_model import DCFModel
 from data.data_processor import DataProcessor
@@ -50,6 +52,7 @@ def calculate_dcf():
             wacc=p.get("wacc", 8) / 100,
             terminal_growth_rate=p.get("terminal_growth_rate", 2) / 100,
             industry=p.get("industry", "N/A"),
+            current_price=p.get("current_price", 0),
         )
 
         years = p.get("projection_years", 5)
@@ -99,4 +102,5 @@ def internal_error(error):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    threading.Timer(1.25, lambda: webbrowser.open("http://127.0.0.1:5000")).start()
+    app.run(debug=True, port=5000, use_reloader=False)
