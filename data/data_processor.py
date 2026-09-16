@@ -22,7 +22,7 @@ class DataProcessor:
         stock = yf.Ticker(ticker)
         info = stock.info
 
-        if not info or info.get("trailingPE") is None:
+        if not info:
             raise ValueError(f"Invalid ticker or no data for '{ticker}'")
 
         financials = stock.financials
@@ -123,11 +123,11 @@ class DataProcessor:
 
     @staticmethod
     def _calc_growth_rate(financials):
-        """Compute average revenue growth, clamped to 1-20%."""
+        """Compute average revenue growth, clamped to -20% to 50%."""
         try:
             revenues = financials.loc["Total Revenue"]
             changes = revenues.pct_change(periods=-1, fill_method=None).dropna()
             avg = changes.head(3).mean() if not changes.empty else 0.05
-            return min(max(avg, 0.01), 0.20)
+            return min(max(avg, -0.20), 0.50)
         except (KeyError, IndexError):
             return 0.05

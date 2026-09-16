@@ -18,6 +18,7 @@ class DCFModel:
         wacc,
         terminal_growth_rate,
         industry="N/A",
+        current_price=0,
     ):
         self.enterprise_value = enterprise_value
         self.debt = debt
@@ -28,6 +29,7 @@ class DCFModel:
         self.wacc = wacc
         self.terminal_growth_rate = terminal_growth_rate
         self.industry = industry
+        self.current_price = current_price
 
     # ------------------------------------------------------------------
     # Public helpers
@@ -183,7 +185,7 @@ class DCFModel:
 
             try:
                 iv = self.intrinsic_value(years)
-                price = self.implied_share_price()
+                price = self.current_price if getattr(self, 'current_price', 0) else self.implied_share_price()
                 upside = ((iv - price) / price * 100) if price else 0
                 results[name] = {
                     "intrinsic_value": iv,

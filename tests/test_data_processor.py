@@ -149,8 +149,8 @@ class TestDataProcessor(unittest.TestCase):
         )
 
         result = self.proc.fetch_yahoo_data("TEST")
-        self.assertGreaterEqual(result["growth_rate"], 0.01)
-        self.assertLessEqual(result["growth_rate"], 0.20)
+        self.assertGreaterEqual(result["growth_rate"], -0.20)
+        self.assertLessEqual(result["growth_rate"], 0.50)
 
 
 if __name__ == "__main__":
